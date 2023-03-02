@@ -68,6 +68,28 @@ def multiply_list_of_lists(lists):
             result[i] *= lst[i]
     return result
 
+
+def transform(C):
+    n = len(C) // 4
+    output_matrix = [C[i:i + n] for i in range(0, len(C), n)]
+    return output_matrix
+
+
+def combine_matrix(matrix1,matrix2,matrix3,matrix4):
+    rows = len(matrix1)
+    cols = len(matrix1[0])
+
+    # Create an empty result matrix
+    result_matrix = []
+
+    # Combine the matrices horizontally
+    for i in range(rows):
+        row = matrix1[i] + matrix2[i] + matrix3[i] + matrix4[i]
+        result_matrix.append(row)
+
+    return result_matrix
+
+
 def multiply_Strassen(A, B,n_min):
     """
     Computes matrix product by divide and conquer approach, recursively.
@@ -101,11 +123,8 @@ def multiply_Strassen(A, B,n_min):
     c12 = add_matrix(p1,p2)
     c21 = add_matrix(p3,p4)
     c22 = subtracting_matrix(subtracting_matrix(add_matrix(p1,p5),p3),p7)
-
-    print(c11,c12,c21,c22)
     # Combining the 4 quadrants into a single matrix by stacking horizontally and vertically.
-    C = [[c11, c12], [c21, c22]]
-
+    C = combine_matrix(c11,c12,c21,c22)
     return C
 
 
@@ -169,8 +188,12 @@ def subtracting_matrix(matrix1, matrix2):
 def ex_3(n):
     A = create_matrix(n)
     B = create_matrix(n)
+    A1=[[1,2],[3,4]]
+    B2=[[5,6],[7,8]]
+
     n_min = 1
-    C = multiply_Strassen(A, B,n_min)
+    C = multiply_Strassen(A1, B2,n_min)
+    C=transform(C[0])
     print(C)
 
 
