@@ -1,4 +1,6 @@
 # FII - 3A5 - Leagan Dan & Tablan Andrei
+import random
+
 import numpy as np
 
 
@@ -31,6 +33,82 @@ def ex_2b(u):
 
 
 # exercise 3
+
+def create_matrix(n):
+    size = 2 ** n
+    matrix = []
+
+    for row in range(0, size):
+        row_list = []
+        for col in range(0, size):
+            row_list.append(random.randint(0, 9))
+        matrix.append(row_list)
+
+    return matrix
+
+
+def split_matrix(matrix):
+    n = len(matrix)
+    if n % 2 != 0:
+        raise ValueError("Matrix size must be even")
+
+    half_n = n // 2
+    top_left = [row[:half_n] for row in matrix[:half_n]]
+    top_right = [row[half_n:] for row in matrix[:half_n]]
+    bottom_left = [row[:half_n] for row in matrix[half_n:]]
+    bottom_right = [row[half_n:] for row in matrix[half_n:]]
+
+    return top_left, top_right, bottom_left, bottom_right
+
+
+def multiply_list_of_lists(lists):
+    result = [1] * len(lists[0])
+    for lst in lists:
+        for i in range(len(lst)):
+            result[i] *= lst[i]
+    return result
+
+def multiply_Strassen(A, B,n_min):
+    """
+    Computes matrix product by divide and conquer approach, recursively.
+    Input: nxn matrices x and y
+    Output: nxn matrix, product of x and y
+    """
+
+    if len(A) == 1:
+        return [[A[0][0] * B[0][0]]]
+    # Base case when size of matrices is 1x1
+
+    # Splitting the matrices into quadrants. This will be done recursively
+    # until the base case is reached.
+
+    a, b, c, d = split_matrix(A)
+    e, f, g, h = split_matrix(B)
+
+
+    # Computing the 7 products, recursively (p1, p2...p7)
+
+    p1 = multiply_Strassen(a, subtracting_matrix(f, h),n_min)
+    p2 = multiply_Strassen(add_matrix(a,b), h,n_min)
+    p3 = multiply_Strassen(add_matrix(c,d), e,n_min)
+    p4 = multiply_Strassen(d, subtracting_matrix(g,e),n_min)
+    p5 = multiply_Strassen(add_matrix(a,d), add_matrix(e,h),n_min)
+    p6 = multiply_Strassen(subtracting_matrix(b,d), add_matrix(g,h),n_min)
+    p7 = multiply_Strassen(subtracting_matrix(a,c), add_matrix(e,f),n_min)
+
+    # Computing the values of the 4 quadrants of the final matrix c
+    c11 = add_matrix(subtracting_matrix(add_matrix(p5,p4),p2),p6)
+    c12 = add_matrix(p1,p2)
+    c21 = add_matrix(p3,p4)
+    c22 = subtracting_matrix(subtracting_matrix(add_matrix(p1,p5),p3),p7)
+
+    print(c11,c12,c21,c22)
+    # Combining the 4 quadrants into a single matrix by stacking horizontally and vertically.
+    C = [[c11, c12], [c21, c22]]
+
+    return C
+
+
 def add_matrix(matrix1, matrix2):
     matrix1_rows = len(matrix1)
     matrix2_rows = len(matrix2)
@@ -88,28 +166,12 @@ def subtracting_matrix(matrix1, matrix2):
     return matrix
 
 
-def ex_3():
-    A = [[1, 2], [3, 4]]
-    B = [[5, 6], [7, 8]]
-
-    A11 = A[0][0]
-    A12 = A[0][1]
-    A21 = A[1][0]
-    A22 = A[1][1]
-    B11 = B[0][0]
-    B12 = B[0][1]
-    B21 = B[1][0]
-    B22 = B[1][1]
-    P1 = (A11 + A22) * (B11 + B22)
-    P2 = (A21 + A22) * B11
-    P3 = A11 * (B12 - B22)
-    P4 = A22 * (B21 - B11)
-    P5 = (A11 + A12) * B22
-    P6 = (A21 - A11) * (B11 + B12)
-    P7 = (A12 - A22) * (B21 + B22)
-
-    C = [[P1 + P4 - P5 + P7, P3 + P5], [P2 + P4, P1 + P3 - P2 + P6]]
-    return C
+def ex_3(n):
+    A = create_matrix(n)
+    B = create_matrix(n)
+    n_min = 1
+    C = multiply_Strassen(A, B,n_min)
+    print(C)
 
 
 if __name__ == '__main__':
@@ -122,4 +184,4 @@ if __name__ == '__main__':
     print("The answers for (xy)z and x(yz) are:", ex_2b(u))
 
     # ex 3
-    print(ex_3())
+    ex_3(2)
