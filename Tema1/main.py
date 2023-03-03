@@ -69,25 +69,25 @@ def multiply_list_of_lists(lists):
     return result
 
 
-def transform(C):
-    n = len(C) // 4
-    output_matrix = [C[i:i + n] for i in range(0, len(C), n)]
-    return output_matrix
+def combine_matrix(matrix1, matrix2, matrix3, matrix4):
+    # get the dimensions of the matrices
+    rows1, cols1 = len(matrix1), len(matrix1[0])
+    rows2, cols2 = len(matrix2), len(matrix2[0])
+    rows3, cols3 = len(matrix3), len(matrix3[0])
+    rows4, cols4 = len(matrix4), len(matrix4[0])
 
+    # check that the matrices have compatible dimensions
+    if rows1 != rows2 or rows1 != rows3 or rows1 != rows4:
+        raise ValueError("Matrices have different number of rows.")
+    if cols1 != cols2 or cols1 != cols3 or cols1 != cols4:
+        raise ValueError("Matrices have different number of columns.")
 
-def combine_matrix(matrix1,matrix2,matrix3,matrix4):
-    rows = len(matrix1)
-    cols = len(matrix1[0])
+    # combine the matrices into a single matrix
+    top = [matrix1[i] + matrix2[i] for i in range(rows1)]
+    bottom = [matrix3[i] + matrix4[i] for i in range(rows3)]
+    result = top + bottom
 
-    # Create an empty result matrix
-    result_matrix = []
-
-    # Combine the matrices horizontally
-    for i in range(rows):
-        row = matrix1[i] + matrix2[i] + matrix3[i] + matrix4[i]
-        result_matrix.append(row)
-
-    return result_matrix
+    return result
 
 
 def multiply_Strassen(A, B,n_min):
@@ -188,12 +188,16 @@ def subtracting_matrix(matrix1, matrix2):
 def ex_3(n):
     A = create_matrix(n)
     B = create_matrix(n)
-    A1=[[1,2],[3,4]]
-    B2=[[5,6],[7,8]]
+    A1=[[3, 8, 5, 3, 4, 0, 5, 6], [1, 6, 0, 7, 7, 8, 0, 3], [0, 8, 4, 1, 5, 2, 9, 8], [5, 2, 1, 7, 5, 3, 9, 1], [3, 0, 1, 0, 3, 9, 6, 3], [4, 7, 7, 2, 2, 6, 7, 2], [1, 0, 6, 1, 0, 8, 0, 7], [7, 0, 6, 3, 5, 9, 8, 6]]
+
+    B2=[[9, 7, 8, 1, 0, 9, 2, 8], [7, 0, 2, 2, 6, 9, 8, 7], [1, 9, 3, 5, 3, 7, 8, 0], [3, 4, 9, 6, 8, 0, 2, 7], [6, 2, 0, 0, 3, 2, 5, 8], [8, 6, 9, 1, 6, 9, 4, 3], [2, 5, 7, 2, 9, 3, 8, 0], [0, 7, 7, 3, 9, 1, 5, 8]]
 
     n_min = 1
-    C = multiply_Strassen(A1, B2,n_min)
-    C=transform(C[0])
+    C = multiply_Strassen(A, B,n_min)
+    print(A)
+    print("------------")
+    print(B)
+    print("-----------------------")
     print(C)
 
 
@@ -207,4 +211,4 @@ if __name__ == '__main__':
     print("The answers for (xy)z and x(yz) are:", ex_2b(u))
 
     # ex 3
-    ex_3(2)
+    ex_3(5)
