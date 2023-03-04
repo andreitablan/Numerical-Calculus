@@ -110,18 +110,18 @@ def multiply_strassen(A, B, n_min):
     a, b, c, d = split_matrix(A)
     e, f, g, h = split_matrix(B)
 
-    p1 = multiply_strassen(a, substract_matrix(f, h), n_min)
+    p1 = multiply_strassen(a, subtract_matrix(f, h), n_min)
     p2 = multiply_strassen(add_matrix(a, b), h, n_min)
     p3 = multiply_strassen(add_matrix(c, d), e, n_min)
-    p4 = multiply_strassen(d, substract_matrix(g, e), n_min)
+    p4 = multiply_strassen(d, subtract_matrix(g, e), n_min)
     p5 = multiply_strassen(add_matrix(a, d), add_matrix(e, h), n_min)
-    p6 = multiply_strassen(substract_matrix(b, d), add_matrix(g, h), n_min)
-    p7 = multiply_strassen(substract_matrix(a, c), add_matrix(e, f), n_min)
+    p6 = multiply_strassen(subtract_matrix(b, d), add_matrix(g, h), n_min)
+    p7 = multiply_strassen(subtract_matrix(a, c), add_matrix(e, f), n_min)
 
-    c11 = add_matrix(substract_matrix(add_matrix(p5, p4), p2), p6)
+    c11 = add_matrix(subtract_matrix(add_matrix(p5, p4), p2), p6)
     c12 = add_matrix(p1, p2)
     c21 = add_matrix(p3, p4)
-    c22 = substract_matrix(substract_matrix(add_matrix(p1, p5), p3), p7)
+    c22 = subtract_matrix(subtract_matrix(add_matrix(p1, p5), p3), p7)
 
     C = combine_matrix(c11, c12, c21, c22)
     return C
@@ -152,7 +152,7 @@ def add_matrix(matrix1, matrix2):
     return matrix
 
 
-def substract_matrix(matrix1, matrix2):
+def subtract_matrix(matrix1, matrix2):
     matrix1_rows = len(matrix1)
     matrix2_rows = len(matrix2)
     matrix1_col = len(matrix1[0])
