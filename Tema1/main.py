@@ -87,27 +87,43 @@ def combine_matrix(matrix1, matrix2, matrix3, matrix4):
     return result
 
 
-def multiply_strassen(A, B,n_min):
-    if len(A) == 1:
-        return [[A[0][0] * B[0][0]]]
+def multiply_matrices(matrix1, matrix2):
+    rows1, cols1 = len(matrix1), len(matrix1[0])
+    rows2, cols2 = len(matrix2), len(matrix2[0])
+    result = []
+    for i in range(rows1):
+        row = []
+        for j in range(cols1):
+            row.append(0)
+        result.append(row)
+    for i in range(rows1):
+        for j in range(cols1):
+            for k in range(rows2):
+                result[i][j] += matrix1[i][k] * matrix2[k][j]
+    return result
+
+
+def multiply_strassen(A, B, n_min):
+    if len(A) == n_min:
+        return multiply_matrices(A, B)
 
     a, b, c, d = split_matrix(A)
     e, f, g, h = split_matrix(B)
 
-    p1 = multiply_strassen(a, subtracting_matrix(f, h),n_min)
-    p2 = multiply_strassen(add_matrix(a,b), h,n_min)
-    p3 = multiply_strassen(add_matrix(c,d), e,n_min)
-    p4 = multiply_strassen(d, subtracting_matrix(g,e),n_min)
-    p5 = multiply_strassen(add_matrix(a,d), add_matrix(e,h),n_min)
-    p6 = multiply_strassen(subtracting_matrix(b,d), add_matrix(g,h),n_min)
-    p7 = multiply_strassen(subtracting_matrix(a,c), add_matrix(e,f),n_min)
+    p1 = multiply_strassen(a, subtracting_matrix(f, h), n_min)
+    p2 = multiply_strassen(add_matrix(a, b), h, n_min)
+    p3 = multiply_strassen(add_matrix(c, d), e, n_min)
+    p4 = multiply_strassen(d, subtracting_matrix(g, e), n_min)
+    p5 = multiply_strassen(add_matrix(a, d), add_matrix(e, h), n_min)
+    p6 = multiply_strassen(subtracting_matrix(b, d), add_matrix(g, h), n_min)
+    p7 = multiply_strassen(subtracting_matrix(a, c), add_matrix(e, f), n_min)
 
-    c11 = add_matrix(subtracting_matrix(add_matrix(p5,p4),p2),p6)
-    c12 = add_matrix(p1,p2)
-    c21 = add_matrix(p3,p4)
-    c22 = subtracting_matrix(subtracting_matrix(add_matrix(p1,p5),p3),p7)
+    c11 = add_matrix(subtracting_matrix(add_matrix(p5, p4), p2), p6)
+    c12 = add_matrix(p1, p2)
+    c21 = add_matrix(p3, p4)
+    c22 = subtracting_matrix(subtracting_matrix(add_matrix(p1, p5), p3), p7)
 
-    C = combine_matrix(c11,c12,c21,c22)
+    C = combine_matrix(c11, c12, c21, c22)
     return C
 
 
@@ -163,18 +179,24 @@ def subtracting_matrix(matrix1, matrix2):
 def ex_3(n):
     A = create_matrix(n)
     B = create_matrix(n)
-    A1=[[3, 8, 5, 3, 4, 0, 5, 6], [1, 6, 0, 7, 7, 8, 0, 3], [0, 8, 4, 1, 5, 2, 9, 8], [5, 2, 1, 7, 5, 3, 9, 1], [3, 0, 1, 0, 3, 9, 6, 3], [4, 7, 7, 2, 2, 6, 7, 2], [1, 0, 6, 1, 0, 8, 0, 7], [7, 0, 6, 3, 5, 9, 8, 6]]
+    A1 = [[3, 8, 5, 3, 4, 0, 5, 6], [1, 6, 0, 7, 7, 8, 0, 3], [0, 8, 4, 1, 5, 2, 9, 8], [5, 2, 1, 7, 5, 3, 9, 1],
+          [3, 0, 1, 0, 3, 9, 6, 3], [4, 7, 7, 2, 2, 6, 7, 2], [1, 0, 6, 1, 0, 8, 0, 7], [7, 0, 6, 3, 5, 9, 8, 6]]
 
-    B2=[[9, 7, 8, 1, 0, 9, 2, 8], [7, 0, 2, 2, 6, 9, 8, 7], [1, 9, 3, 5, 3, 7, 8, 0], [3, 4, 9, 6, 8, 0, 2, 7], [6, 2, 0, 0, 3, 2, 5, 8], [8, 6, 9, 1, 6, 9, 4, 3], [2, 5, 7, 2, 9, 3, 8, 0], [0, 7, 7, 3, 9, 1, 5, 8]]
+    B2 = [[9, 7, 8, 1, 0, 9, 2, 8], [7, 0, 2, 2, 6, 9, 8, 7], [1, 9, 3, 5, 3, 7, 8, 0], [3, 4, 9, 6, 8, 0, 2, 7],
+          [6, 2, 0, 0, 3, 2, 5, 8], [8, 6, 9, 1, 6, 9, 4, 3], [2, 5, 7, 2, 9, 3, 8, 0], [0, 7, 7, 3, 9, 1, 5, 8]]
 
-    n_min = 1
-    C = multiply_strassen(A, B,n_min)
+    A11 = [[2, 0], [0, 2]]
+    B22 = [[1, 1], [1, 1]]
+    n_min = 2
+    C = multiply_strassen(A, B, n_min)
     print("----------A------------")
     print(A)
     print("----------B------------")
     print(B)
     print("----------C------------")
     print(C)
+    print("---------A*B------------")
+    print(multiply_matrices(A,B))
 
 
 if __name__ == '__main__':
@@ -187,4 +209,4 @@ if __name__ == '__main__':
     print("The answers for (xy)z and x(yz) are:", ex_2b(u))
 
     # ex 3
-    ex_3(5)
+    ex_3(3)
