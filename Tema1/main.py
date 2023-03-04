@@ -176,7 +176,7 @@ def substract_matrix(matrix1, matrix2):
     return matrix
 
 
-def ex_3(n):
+def ex_3(n,n_min):
     A = create_matrix(n)
     B = create_matrix(n)
     A1 = [[3, 8, 5, 3, 4, 0, 5, 6], [1, 6, 0, 7, 7, 8, 0, 3], [0, 8, 4, 1, 5, 2, 9, 8], [5, 2, 1, 7, 5, 3, 9, 1],
@@ -187,7 +187,6 @@ def ex_3(n):
 
     A11 = [[2, 0], [0, 2]]
     B22 = [[1, 1], [1, 1]]
-    n_min = 2
     C = multiply_strassen(A, B, n_min)
     print("----------A------------")
     print(A)
@@ -209,4 +208,4 @@ if __name__ == '__main__':
     print("The answers for (xy)z and x(yz) are:", ex_2b(u))
 
     # ex 3
-    ex_3(3)
+    ex_3(3,2)
