@@ -8,21 +8,25 @@ def machine_epsilon():
 
 
 def lower_triangular(A):
-    n = A.shape[0]  # get the size of the matrix A
-    L = np.zeros_like(A)  # create a matrix of zeros with the same shape as A
+    n = len(A)
+    L = np.zeros((n, n))
+    for j in range(n):
+        for i in range(j, n):
+            if i == j:
+                L[i][j] = np.sqrt(A[i][j] - sum(L[i][k] ** 2 for k in range(j)))
+            else:
+                L[i][j] = (A[i][j] - sum(L[i][k] * L[j][k] for k in range(j))) / L[j][j]
 
-    # fill the lower triangular part of L with the corresponding entries of A
-    for i in range(n):
-        for j in range(i + 1):
-            L[i, j] = A[i, j]
-    for i in range(n):
-        for j in range(n):
-            if i==j :
-                L[i, j] = 1
-    print(L)
-    print("a fost L aici")
     return L
 
+
+def change_diagonal(L):
+    n=len(L)
+    for i in range(n):
+        for j in range(n):
+            if i == j:
+                L[i][j] = 1
+    return L
 
 
 def get_transpose(A):
@@ -37,6 +41,16 @@ def multiply_matrices(A, B):
     return A.dot(B)
 
 
+def cholesky_with_diagonal_out(A):
+    n = len(A)
+    L = np.linalg.cholesky(A)
+    d = np.diag(L)
+    L_prime = np.identity(n) + L - np.diag(d)
+    D = np.diag(d)
+    print(L)
+    print(np.matmul(L_prime, D))
+
+
 def cholesky(A):
     L= np.linalg.cholesky(A)
     return L
@@ -44,12 +58,11 @@ def cholesky(A):
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    A = np.array([[1, 2, 3], [2, 1, 5], [3, 5, 1]])
+    A = np.array([[2., 2., 3.],
+                  [2., 6., 5.],
+                  [3., 5., 8.]])
     L = lower_triangular(A)
-    D = get_diagonal_matrix(A)
     LT = get_transpose(L)
-    print(LT)
-    A1 = multiply_matrices(multiply_matrices(L, D), LT)
-    #print(cholesky(A))
+    cholesky_with_diagonal_out(A)
     print("-------------------")
-    print(A1)
+
