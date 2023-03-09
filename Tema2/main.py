@@ -21,7 +21,7 @@ def lower_triangular(A):
 
 
 def change_diagonal(L):
-    n=len(L)
+    n = len(L)
     for i in range(n):
         for j in range(n):
             if i == j:
@@ -34,7 +34,7 @@ def get_transpose(A):
 
 
 def get_diagonal_matrix(A):
-    return np.diag(np.diag(A))
+    return np.diag(A)
 
 
 def multiply_matrices(A, B):
@@ -52,7 +52,7 @@ def cholesky_with_diagonal_out(A):
 
 
 def cholesky(A):
-    L= np.linalg.cholesky(A)
+    L = np.linalg.cholesky(A)
     return L
 
 
