@@ -71,8 +71,40 @@ def cholesky_decomposition(A):
     return L, D, LT, B
 
 
+def cholesky_solve(A, b):
+    n = len(A)
+    L, D, LT, B = cholesky_decomposition(A)
+
+    # Forward substitution to solve Ly = b
+    y = [0.0] * n
+    for i in range(n):
+        s = 0.0
+        for j in range(i):
+            s += L[i][j] * y[j]
+        y[i] = (b[i] - s) / L[i][i]
+
+    # Backward substitution to solve LTx = y
+    x = [0.0] * n
+    for i in reversed(range(n)):
+        s = 0.0
+        for j in range(i + 1, n):
+            s += LT[i][j] * x[j]
+        x[i] = (y[i] - s) / LT[i][i]
+
+    return x
+
+
 if __name__ == '__main__':
-    A = [[4, 6, 10], [6, 25, 19], [10, 19, 94]]
+    A = [[1,2.5,3], [2.5, 8.25, 15.5], [3, 15.5, 43]]
+    b = [12, 38, 68]
+
+    A1 = np.array([[4, 2, 1],
+                  [2, 5, 3],
+                  [1, 3, 6]])
+
+    b1 = np.array([4, 7, 9])
+    #A = [[4, 6, 10], [6, 25, 19], [10, 19, 94]]
+    #b = [2, 5, 10]
 
     '''
     L = np.linalg.cholesky(A)
@@ -108,3 +140,26 @@ if __name__ == '__main__':
     print("LT = ", LT)
     print("B = ", B)
     print("det A = ", det_A)
+    xChol = cholesky_solve(A, b)
+    print("xChol = ", xChol)
+    residual = np.dot(A, xChol) - b
+    norm_residual = np.linalg.norm(residual, ord=2)
+    print(norm_residual)
+    print("--------------------------")
+
+
+    # compute the LU decomposition of A
+    L1 = np.linalg.cholesky(A)
+    U1=get_transpose(L1)
+    print(" L1 = ", L1)
+    print(" U1 = ", U1)
+    print(multiply_matrices(L1,U1))
+    # solve the system Ax=b using linalg.solve()
+    x1 = np.linalg.solve(A, b)
+    print(x1)
+
+    # calculate the norm of the residual vector
+    residual = np.dot(A, x1) - b
+    norm_residual = np.linalg.norm(residual, ord=2)
+    print(norm_residual)
+
