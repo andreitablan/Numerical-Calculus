@@ -165,6 +165,18 @@ def solve_system_bonus(A_init, b):
     return x
 
 
+def verify_with_initial_matrix(A_init, A):
+    global epsilon
+    verify_matrix(A_init)
+    verify_matrix(A)
+    n = len(A_init)
+    for i in range(n):
+        for j in range(n):
+            if abs(A[i][j] - A_init[i][j]) > epsilon:
+                return False
+    return True
+
+
 if __name__ == '__main__':
     m = int(input("m="))
     set_epsilon(10 ** -m)
@@ -182,7 +194,7 @@ if __name__ == '__main__':
     print("x_chol = ", x_chol)
     print("y_chol = ", y_chol)
 
-    residual = np.dot(A, x_chol) - b
+    residual = np.dot(A_init, x_chol) - b
     norm_residual = np.linalg.norm(residual, ord=2)
     print("norm_x = ", norm_residual)
 
@@ -202,5 +214,7 @@ if __name__ == '__main__':
 
     print("-----------Bonus 2-------------")
 
-    x_bonus=solve_system_bonus(A_init,b)
+    x_bonus = solve_system_bonus(A_init, b)
     print("x bonus = ", x_bonus)
+
+    print("The decomposition was correct : ", verify_with_initial_matrix(A_init, A))
