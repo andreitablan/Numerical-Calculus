@@ -41,21 +41,24 @@ def multiply_matrices(A, B):
     return A.dot(B)
 
 
-def cholesky_decomposition(A):
-    n = len(A)
+def cholesky_decomposition_with_L_D_LT(A_init):
+    n = len(A_init)
+    A = [[0.0] * n for i in range(n)]
     L = [[0.0] * n for i in range(n)]
     D = [0.0] * n
 
+    print(L)
+    print(D)
     for i in range(n):
         for j in range(i):
             s = 0.0
             for k in range(j):
                 s += L[i][k] * L[j][k] * D[k]
-            L[i][j] = (A[i][j] - s) / D[j]
+            L[i][j] = (A_init[i][j] - s) / D[j]
         s = 0.0
         for k in range(i):
             s += L[i][k] ** 2 * D[k]
-        D[i] = A[i][i] - s
+        D[i] = A_init[i][i] - s
         L[i][i] = 1.0
 
     LT = [[L[j][i] for j in range(n)] for i in range(n)]
@@ -73,7 +76,7 @@ def cholesky_decomposition(A):
 
 def cholesky_solve(A, b):
     n = len(A)
-    L, D, LT, B = cholesky_decomposition(A)
+    L, D, LT, B = cholesky_decomposition_with_L_D_LT(A)
 
     # Forward substitution to solve Ly = b
     y = [0.0] * n
@@ -95,16 +98,16 @@ def cholesky_solve(A, b):
 
 
 if __name__ == '__main__':
-    A = [[1,2.5,3], [2.5, 8.25, 15.5], [3, 15.5, 43]]
+    A = [[1, 2.5, 3], [2.5, 8.25, 15.5], [3, 15.5, 43]]
     b = [12, 38, 68]
 
     A1 = np.array([[4, 2, 1],
-                  [2, 5, 3],
-                  [1, 3, 6]])
+                   [2, 5, 3],
+                   [1, 3, 6]])
 
     b1 = np.array([4, 7, 9])
-    #A = [[4, 6, 10], [6, 25, 19], [10, 19, 94]]
-    #b = [2, 5, 10]
+    # A = [[4, 6, 10], [6, 25, 19], [10, 19, 94]]
+    # b = [2, 5, 10]
 
     '''
     L = np.linalg.cholesky(A)
@@ -119,7 +122,7 @@ if __name__ == '__main__':
     print(multiply_matrices(multiply_matrices(L,D),LT))
     '''
 
-    L, D, LT, B = cholesky_decomposition(A)
+    L, D, LT, B = cholesky_decomposition_with_L_D_LT(A)
     n = len(A)
     det_L = 1.0
     for i in range(n):
@@ -134,7 +137,7 @@ if __name__ == '__main__':
         det_LT *= L[i][i]
 
     det_A = det_L * det_D * det_LT
-    print("A= ",A)
+    print("A= ", A)
     print("L = ", L)
     print("D = ", D)
     print("LT = ", LT)
@@ -147,13 +150,12 @@ if __name__ == '__main__':
     print(norm_residual)
     print("--------------------------")
 
-
     # compute the LU decomposition of A
     L1 = np.linalg.cholesky(A)
-    U1=get_transpose(L1)
+    U1 = get_transpose(L1)
     print(" L1 = ", L1)
     print(" U1 = ", U1)
-    print(multiply_matrices(L1,U1))
+    print(multiply_matrices(L1, U1))
     # solve the system Ax=b using linalg.solve()
     x1 = np.linalg.solve(A, b)
     print(x1)
@@ -162,4 +164,3 @@ if __name__ == '__main__':
     residual = np.dot(A, x1) - b
     norm_residual = np.linalg.norm(residual, ord=2)
     print(norm_residual)
-
