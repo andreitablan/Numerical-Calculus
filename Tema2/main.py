@@ -1,4 +1,6 @@
 # LEAGAN DAN ADRIAN - TABLAN ANDREI RAZVAN - TEMA 2
+import math
+
 import numpy as np
 import random
 
@@ -156,6 +158,19 @@ def cholesky_solve_bonus_y(D, z):
     return y
 
 
+def calculate_norm(A,x,b):
+    n = len(A)
+    sum = 0
+    for i in range(n):
+        s_line = 0
+        for j in range(n):
+            s_line += A[i][j] * x[j]
+        z = s_line - b[i]
+        sum += z ** 2
+    norm = math.sqrt(sum)
+    return norm
+
+
 def solve_system_bonus(A_init, b):
     verify_matrix(A_init)
     L, D, LT, A = cholesky_decomposition_with_L_D_LT(A_init)
@@ -194,13 +209,11 @@ if __name__ == '__main__':
     print("x_chol = ", x_chol)
     print("y_chol = ", y_chol)
 
-    residual = np.dot(A_init, x_chol) - b
-    norm_residual = np.linalg.norm(residual, ord=2)
-    print("norm_x = ", norm_residual)
+    norm_x=calculate_norm(A,x_chol,b)
+    print("norm_x = ", norm_x)
 
-    residual = np.dot(A, y_chol) - b
-    norm_residual = np.linalg.norm(residual, ord=2)
-    print("norm_y = ", norm_residual)
+    norm_y = calculate_norm(A, x_chol, b)
+    print("norm_y = ", norm_y)
 
     print("-----------Numpy-------------")
 
@@ -214,7 +227,6 @@ if __name__ == '__main__':
 
     print("-----------Bonus 2-------------")
 
-    x_bonus = solve_system_bonus(A_init, b)
+    x_bonus = solve_system_bonus(A, b)
     print("x bonus = ", x_bonus)
-
     print("The decomposition was correct : ", verify_with_initial_matrix(A_init, A))
