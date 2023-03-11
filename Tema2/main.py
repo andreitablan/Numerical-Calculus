@@ -220,9 +220,12 @@ if __name__ == '__main__':
     U = get_transpose(L)
     print(" L = ", L)
     print(" U = ", U)
-    print("A(from numpy)", multiply_matrices(L, U))
+    A=multiply_matrices(L, U)
+    print("A(from numpy)", A)
     x = np.linalg.solve(A_init, b)
     print("x=", x)
+    #norm=calculate_norm(A,x,b)
+    #print("Nympy norm: ", x)
 
     print("-----------Bonus 2-------------")
 
