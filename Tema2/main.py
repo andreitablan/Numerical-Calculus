@@ -24,10 +24,14 @@ def multiply_matrices(A, B):
 
 
 def verify_matrix(A):
-    for line in A:
-        for element in line:
-            if element < 0:
-                raise ValueError("A is not positive!")
+    n = len(A)
+    for i in range(n):
+        s = 0.0
+        for j in range(0, n):
+            if i != j:
+                s += A[i][j]
+        if A[i][i] <= s:
+            raise ValueError("A is not positive definite!")
 
 
 def verify_divide(number):
@@ -42,7 +46,10 @@ def random_symmetric_matrix(n):
         for j in range(i + 1):
             A[i][j] = random.randint(1, 100)
             A[j][i] = A[i][j]
-    return A
+    if np.all(np.linalg.eigvals(A) > 0):
+        return A
+    else:
+        random_symmetric_matrix(n)
 
 
 def random_vector(n):
@@ -157,7 +164,7 @@ def cholesky_solve_bonus_y(D, z):
     return y
 
 
-def calculate_norm(A,x,b):
+def calculate_norm(A, x, b):
     n = len(A)
     sum = 0
     for i in range(n):
@@ -192,9 +199,12 @@ def verify_with_initial_matrix(A_init, A):
 
 
 if __name__ == '__main__':
-    m = int(input("m="))
+    #m = int(input("m="))
+    m=5
     set_epsilon(10 ** -m)
-    A_init = [[1, 2.5, 3], [2.5, 8.25, 15.5], [3, 15.5, 43]]
+    # A_init = [[1, 2.5, 3], [2.5, 8.25, 15.5], [3, 15.5, 43]]
+    A_init = [[4, 12, -16], [12, 37, -43], [-16, -43, 98]]
+
     b = [12, 38, 68]
     # n = int(input("n="))
     # A_init = random_symmetric_matrix(n)
@@ -208,7 +218,7 @@ if __name__ == '__main__':
     print("x_chol = ", x_chol)
     print("y_chol = ", y_chol)
 
-    norm_x=calculate_norm(A,x_chol,b)
+    norm_x = calculate_norm(A, x_chol, b)
     print("norm_x = ", norm_x)
 
     norm_y = calculate_norm(A, x_chol, b)
@@ -220,15 +230,19 @@ if __name__ == '__main__':
     U = get_transpose(L)
     print(" L = ", L)
     print(" U = ", U)
-    A=multiply_matrices(L, U)
+    A = multiply_matrices(L, U)
     print("A(from numpy)", A)
     x = np.linalg.solve(A_init, b)
     print("x=", x)
-    #norm=calculate_norm(A,x,b)
-    #print("Nympy norm: ", x)
 
     print("-----------Bonus 2-------------")
 
+    x_bonus = solve_system_bonus(A, b)
+    print("x bonus = ", x_bonus)
+    print("The decomposition was correct : ", verify_with_initial_matrix(A_init, A))
+
+    print("--------------------------------")
+    L, D, LT, A = cholesky_decomposition_with_L_D_LT(A_init)
     x_bonus = solve_system_bonus(A, b)
     print("x bonus = ", x_bonus)
     print("The decomposition was correct : ", verify_with_initial_matrix(A_init, A))
