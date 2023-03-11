@@ -1,6 +1,5 @@
-# LEAGAN DAN ADRIAN - TABLAN ANDREI RAZVAN - TEMA 2
+# FII - 3A5 - Tema 2 - Leagan Dan & Tablan Andrei
 import math
-
 import numpy as np
 import random
 
