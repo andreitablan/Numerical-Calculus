@@ -102,38 +102,26 @@ def cholesky_decomposition(A_init):
             for k in range(j):
                 s += A[i][k] * A[j][k] * D[k]
             verify_divide(D[j])
-            A[i][j] = s + ((A_init[i][j] - s) / D[j]) * D[j]
-            A[j][i] = A[i][j]
+            A[i][j] = (A_init[i][j] - s) / D[j]
+            A[j][i] = A_init[j][i]
         s = 0.0
         for k in range(i):
             s += A[i][k] ** 2 * D[k]
-
         D[i] = A_init[i][i] - s
         A[i][i] = s + D[i]
-    return A
+    return A, D
 
 
-def calculate_determinant(A_init):
-    verify_matrix(A_init)
-    L, D, LT, A = cholesky_decomposition_with_L_D_LT(A_init)
-    n = len(A_init)
-    det_L = 1.0
-    for i in range(n):
-        det_L *= L[i][i]
-
+def calculate_determinant(D):
+    n = len(D)
     det_D = 1.0
     for i in range(n):
         det_D *= D[i]
-
-    det_LT = 1.0
-    for i in range(n):
-        det_LT *= L[i][i]
-
-    det_A = det_L * det_D * det_LT
+    det_A = det_D
     print("det A = ", det_A)
 
 
-def cholesky_solve(A, b):
+def cholesky_solve_inferior(A, b):
     global epsilon
     n = len(A)
     x = [0.0] * n
@@ -141,17 +129,21 @@ def cholesky_solve(A, b):
         s = 0.0
         for j in range(i):
             s += A[i][j] * x[j]
-        verify_divide(A[i][i])
-        x[i] = (b[i] - s) / A[i][i]
+        x[i] = b[i] - s
+    return x
 
+
+def cholesky_solve_superior(A, b):
+    global epsilon
+    n = len(A)
     y = [0.0] * n
-    for i in range(n):
+    y[n - 1] = b[n - 1]
+    for i in range(n - 2, -1, -1):
         s = 0.0
         for j in range(i + 1, n):
-            s += A[i][j] * y[j]
-        verify_divide(A[i][i])
-        y[i] = (b[i] - s) / A[i][i]
-    return x, y
+            s += A[j][i] * y[j]
+        y[i] = b[i] - s
+    return y
 
 
 def cholesky_solve_bonus_y(D, z):
@@ -179,10 +171,10 @@ def calculate_norm(A, x, b):
 
 def solve_system_bonus(A_init, b):
     verify_matrix(A_init)
-    L, D, LT, A = cholesky_decomposition_with_L_D_LT(A_init)
-    z, z1 = cholesky_solve(L, b)
+    A, D = cholesky_decomposition(A_init)
+    z = cholesky_solve_inferior(A, b)
     y = cholesky_solve_bonus_y(D, z)
-    x1, x = cholesky_solve(LT, y)
+    x = cholesky_solve_superior(A, y)
     return x
 
 
@@ -199,30 +191,26 @@ def verify_with_initial_matrix(A_init, A):
 
 
 if __name__ == '__main__':
-    #m = int(input("m="))
-    m=5
+    # m = int(input("m="))
+    m = 5
     set_epsilon(10 ** -m)
     # A_init = [[1, 2.5, 3], [2.5, 8.25, 15.5], [3, 15.5, 43]]
-    A_init = [[4, 12, -16], [12, 37, -43], [-16, -43, 98]]
-
-    b = [12, 38, 68]
+    # A_init = [[4, 12, -16], [12, 37, -43], [-16, -43, 98]]
+    A_init = [[2, 1, 0], [1, 2, 0], [0, 0, 3]]
+    b = [3, 3, 3]
+    # b = [12, 38, 68]
     # n = int(input("n="))
     # A_init = random_symmetric_matrix(n)
     # b = random_vector(n)
 
-    A = cholesky_decomposition(A_init)
+    A, D = cholesky_decomposition(A_init)
     print("A =", A)
-    calculate_determinant(A)
-    x_chol, y_chol = cholesky_solve(A, b)
-    print("b = ", b)
+    calculate_determinant(D)
+    x_chol = solve_system_bonus(A_init, b)
     print("x_chol = ", x_chol)
-    print("y_chol = ", y_chol)
 
     norm_x = calculate_norm(A, x_chol, b)
     print("norm_x = ", norm_x)
-
-    norm_y = calculate_norm(A, x_chol, b)
-    print("norm_y = ", norm_y)
 
     print("-----------Numpy-------------")
 
@@ -236,13 +224,5 @@ if __name__ == '__main__':
     print("x=", x)
 
     print("-----------Bonus 2-------------")
-
-    x_bonus = solve_system_bonus(A, b)
-    print("x bonus = ", x_bonus)
-    print("The decomposition was correct : ", verify_with_initial_matrix(A_init, A))
-
-    print("--------------------------------")
-    L, D, LT, A = cholesky_decomposition_with_L_D_LT(A_init)
-    x_bonus = solve_system_bonus(A, b)
-    print("x bonus = ", x_bonus)
+    A,D=cholesky_decomposition(A_init)
     print("The decomposition was correct : ", verify_with_initial_matrix(A_init, A))
