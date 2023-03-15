@@ -178,15 +178,28 @@ def solve_system_bonus(A_init, b):
     return x
 
 
-def verify_with_initial_matrix(A_init, A):
+def verify_with_initial_matrix(A_init, A, D):
     global epsilon
     verify_matrix(A_init)
     verify_matrix(A)
     n = len(A_init)
+    print(A)
+    print(A_init)
+
     for i in range(n):
-        for j in range(n):
-            if abs(A[i][j] - A_init[i][j]) > epsilon:
+        for j in range(i):
+            s = 0.0
+            for k in range(j):
+                s += A[i][k] * A[j][k] * D[k]
+            element = s+A[i][j]*D[j]
+            if abs(element - float(A_init[i][i])) > epsilon:
+                print(element, i, j, float(A_init[i][j]))
                 return False
+        s = 0.0
+        for k in range(i):
+            s += A[i][k] ** 2 * D[k]
+        if abs((s + D[i]) - float(A_init[i][i])) > epsilon:
+            return False
     return True
 
 
@@ -224,5 +237,5 @@ if __name__ == '__main__':
     print("x=", x)
 
     print("-----------Bonus 2-------------")
-    A,D=cholesky_decomposition(A_init)
-    print("The decomposition was correct : ", verify_with_initial_matrix(A_init, A))
+    A, D = cholesky_decomposition(A_init)
+    print("The decomposition was correct : ", verify_with_initial_matrix(A_init, A, D))
