@@ -192,13 +192,13 @@ def verify_with_initial_matrix(A_init, A, D):
             for k in range(j):
                 s += A[i][k] * A[j][k] * D[k]
             element = s+A[i][j]*D[j]
-            if abs(element - float(A_init[i][i])) > epsilon:
-                print(element, i, j, float(A_init[i][j]))
+            if abs(element - A_init[i][j]) > epsilon:
                 return False
         s = 0.0
         for k in range(i):
             s += A[i][k] ** 2 * D[k]
-        if abs((s + D[i]) - float(A_init[i][i])) > epsilon:
+        element = s + D[i]
+        if abs( element- A_init[i][i]) > epsilon:
             return False
     return True
 
@@ -207,11 +207,10 @@ if __name__ == '__main__':
     # m = int(input("m="))
     m = 5
     set_epsilon(10 ** -m)
-    # A_init = [[1, 2.5, 3], [2.5, 8.25, 15.5], [3, 15.5, 43]]
     # A_init = [[4, 12, -16], [12, 37, -43], [-16, -43, 98]]
+    # b = [12, 38, 68]
     A_init = [[2, 1, 0], [1, 2, 0], [0, 0, 3]]
     b = [3, 3, 3]
-    # b = [12, 38, 68]
     # n = int(input("n="))
     # A_init = random_symmetric_matrix(n)
     # b = random_vector(n)
@@ -222,7 +221,7 @@ if __name__ == '__main__':
     x_chol = solve_system_bonus(A_init, b)
     print("x_chol = ", x_chol)
 
-    norm_x = calculate_norm(A, x_chol, b)
+    norm_x = calculate_norm(A_init, x_chol, b)
     print("norm_x = ", norm_x)
 
     print("-----------Numpy-------------")
