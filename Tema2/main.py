@@ -24,6 +24,8 @@ def multiply_matrices(A, B):
 
 
 def verify_matrix(A):
+    print("--------")
+    print(A)
     n = len(A)
     for i in range(n):
         s = 0.0
@@ -46,10 +48,13 @@ def random_symmetric_matrix(n):
         for j in range(i + 1):
             A[i][j] = random.randint(1, 100)
             A[j][i] = A[i][j]
-    if np.all(np.linalg.eigvals(A) > 0):
-        return A
-    else:
-        random_symmetric_matrix(n)
+    for i in range(n):
+        s = 0
+        for j in range(n):
+            if i != j:
+                s += A[i][j]
+        A[i][i] += s
+    return A
 
 
 def random_vector(n):
@@ -60,7 +65,6 @@ def random_vector(n):
 
 
 def cholesky_decomposition_with_L_D_LT(A_init):
-    verify_matrix(A_init)
     n = len(A_init)
     A = [[0.0] * n for i in range(n)]
     L = [[0.0] * n for i in range(n)]
@@ -189,16 +193,16 @@ def verify_with_initial_matrix(A, D):
             s = 0.0
             for k in range(j):
                 s += A[i][k] * A[j][k] * D[k]
-            element = s+A[i][j]*D[j]
-            print(element, A[j][i], i, j)
+            element = s + A[i][j] * D[j]
+            # print(element, A[j][i], i, j)
             if abs(element - A[j][i]) > epsilon:
                 return False
         s = 0.0
         for k in range(i):
             s += A[i][k] ** 2 * D[k]
         element = s + D[i]
-        print(element, A[i][i], i, i)
-        if abs( element- A[i][i]) > epsilon:
+        # print(element, A[i][i], i, i)
+        if abs(element - A[i][i]) > epsilon:
             return False
     return True
 
@@ -207,13 +211,18 @@ if __name__ == '__main__':
     # m = int(input("m="))
     m = 5
     set_epsilon(10 ** -m)
-    A_init = [[4, 12, -16], [12, 37, -43], [-16, -43, 98]]
-    b = [12, 38, 68]
-    #A_init = [[2, 1, 0], [1, 2, 0], [0, 0, 3]]
-    #b = [3, 3, 3]
-    # n = int(input("n="))
-    # A_init = random_symmetric_matrix(n)
-    # b = random_vector(n)
+    # A_init = [[4, 12, -16], [12, 37, -43], [-16, -43, 98]]
+    # b = [12, 38, 68]
+    # A_init = [[2, 1, 0], [1, 2, 0], [0, 0, 3]]
+    # b = [3, 3, 3]
+    # verify_matrix(A_init)
+
+    n = int(input("n="))
+    A_init = random_symmetric_matrix(n)
+    b = random_vector(n)
+    print("Generate Random:")
+    print("A initial: ", A_init)
+    print("b", b)
 
     A, D = cholesky_decomposition(A_init)
     print("A =", A)
