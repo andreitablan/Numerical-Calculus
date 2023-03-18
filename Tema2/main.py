@@ -178,13 +178,11 @@ def solve_system_bonus(A_init, b):
     return x
 
 
-def verify_with_initial_matrix(A_init, A, D):
+def verify_with_initial_matrix(A, D):
     global epsilon
-    verify_matrix(A_init)
     verify_matrix(A)
-    n = len(A_init)
+    n = len(A)
     print(A)
-    print(A_init)
 
     for i in range(n):
         for j in range(i):
@@ -192,13 +190,15 @@ def verify_with_initial_matrix(A_init, A, D):
             for k in range(j):
                 s += A[i][k] * A[j][k] * D[k]
             element = s+A[i][j]*D[j]
-            if abs(element - A_init[i][j]) > epsilon:
+            print(element, A[j][i], i, j)
+            if abs(element - A[j][i]) > epsilon:
                 return False
         s = 0.0
         for k in range(i):
             s += A[i][k] ** 2 * D[k]
         element = s + D[i]
-        if abs( element- A_init[i][i]) > epsilon:
+        print(element, A[i][i], i, i)
+        if abs( element- A[i][i]) > epsilon:
             return False
     return True
 
@@ -207,10 +207,10 @@ if __name__ == '__main__':
     # m = int(input("m="))
     m = 5
     set_epsilon(10 ** -m)
-    # A_init = [[4, 12, -16], [12, 37, -43], [-16, -43, 98]]
-    # b = [12, 38, 68]
-    A_init = [[2, 1, 0], [1, 2, 0], [0, 0, 3]]
-    b = [3, 3, 3]
+    A_init = [[4, 12, -16], [12, 37, -43], [-16, -43, 98]]
+    b = [12, 38, 68]
+    #A_init = [[2, 1, 0], [1, 2, 0], [0, 0, 3]]
+    #b = [3, 3, 3]
     # n = int(input("n="))
     # A_init = random_symmetric_matrix(n)
     # b = random_vector(n)
@@ -235,6 +235,9 @@ if __name__ == '__main__':
     x = np.linalg.solve(A_init, b)
     print("x=", x)
 
+    norm_x = calculate_norm(A_init, x, b)
+    print("norm_x = ", norm_x)
+
     print("-----------Bonus 2-------------")
     A, D = cholesky_decomposition(A_init)
-    print("The decomposition was correct : ", verify_with_initial_matrix(A_init, A, D))
+    print("The decomposition was correct : ", verify_with_initial_matrix(A, D))
