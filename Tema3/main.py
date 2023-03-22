@@ -153,8 +153,40 @@ def qr_householder(A, b):
             gama = sum / Beta
             for i in range(r, n):
                 Q[i][j] = Q[i][j] - gama * u[i]
-    Q=transpose_matrix(Q)
-    return Q, A
+    Q = transpose_matrix(Q)
+    return Q, A, b
+
+
+def solve_upper_triangular_system(R, b):
+    n = len(R)
+    x = [0] * n
+
+    # Back substitution
+    for i in range(n - 1, -1, -1):
+        s = 0
+        for j in range(i + 1, n):
+            s += R[i][j] * x[j]
+        x[i] = (b[i] - s) / R[i][i]
+
+    return x
+
+
+def solve_upper_triangular_system_q(R, Q_transpose, b):
+    """
+    Solve the upper triangular system Rx = Q^T b using back substitution.
+    """
+    n = len(R)
+    m = len(Q_transpose[0])
+    x = [0] * m
+
+    # Back substitution
+    for i in range(n - 1, -1, -1):
+        s = 0
+        for j in range(i + 1, n):
+            s += R[i][j] * x[j]
+        x[i] = sum(Q_transpose[i][k] * b[k] for k in range(m)) - s / R[i][i]
+
+    return x
 
 
 if __name__ == '__main__':
@@ -163,11 +195,34 @@ if __name__ == '__main__':
     s = [3, 2, 1]
     b = calculate_b(A, s)
 
-    Q, R = qr_householder(A, b)
+    Q_numpy, R_numpy = np.linalg.qr(A)
+    x_qa=solve_upper_triangular_system_q(R_numpy,transpose_matrix(Q_numpy),b)
+    print("---Numpy---")
+    print("---Q---")
+    for line in Q_numpy:
+        print(line)
+    print("---R---")
+    for line in R_numpy:
+        print(line)
+    print("---x qa---")
+    print(x_qa)
 
-    print("Q:")
-    for row in Q:
-        print(row)
-    print("R:")
-    for row in R:
-        print(row)
+    print("---CALCULAT---")
+    Q, A, b = qr_householder(A, b)
+    x_householder = solve_upper_triangular_system(A, b)
+    print("---Numpy---")
+    print("---Q---")
+    for line in Q:
+        print(line)
+    print("---R---")
+    for line in A:
+        print(line)
+    print("---x householder---")
+    print(x_householder)
+    x=[0.0]*len(A)
+    for i in range(len(A)):
+        x[i]=x_householder[i]-x_qa[i]
+    norm = np.linalg.norm(x)
+    print("---norm---")
+    print(norm)
+
