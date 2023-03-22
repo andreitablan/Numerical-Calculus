@@ -1,5 +1,5 @@
 import math
-
+import random
 import numpy as np
 
 global epsilon
@@ -189,18 +189,118 @@ def solve_upper_triangular_system_q(R, Q_transpose, b):
     return x
 
 
-def calculate_norms(A_init, x_householder, x_qa, b, s):
-    AX = multiply_matrices(A_init, x_householder)
- 
+def matrix_vector_multiply(matrix, vector):
+    result = [0] * len(matrix)
+    for i in range(len(matrix)):
+        row = matrix[i]
+        for j in range(len(vector)):
+            result[i] += row[j] * vector[j]
+    return result
+
+
+def calculate_norm_vectors(x, y):
+    n = len(x)
+    sum = 0
+    for i in range(n):
+        sum += (x[i] - y[i]) ** 2
+    norm = math.sqrt(sum)
+    return norm
+
+
+def calculate_norm_one_vector(x):
+    n = len(x)
+    sum = 0
+    for i in range(n):
+        sum += x[i] ** 2
+    norm = math.sqrt(sum)
+    return norm
+
+
+def calculate_norm_system(A, x, b):
+    n = len(A)
+    sum = 0
+    for i in range(n):
+        s_line = 0
+        for j in range(n):
+            s_line += A[i][j] * x[j]
+        z = s_line - b[i]
+        sum += z ** 2
+    norm = math.sqrt(sum)
+    return norm
+
+
+def calculate_norms(A_init, x_householder, x_qr, b, s):
+    norm = calculate_norm_system(A_init, x_householder, b_init)
+    print("|| A_init x_householder - b_init||2 : ", norm)
+    if norm < epsilon:
+        print("The norm is less than 10^(-6)")
+    else:
+        print("The norm is not less than 10^(-6)")
+    norm = calculate_norm_system(A_init, x_qr, b_init)
+    print("|| A_init x_qr - b_init||2 : ", norm)
+    if norm < epsilon:
+        print("The norm is less than 10^(-6)")
+    else:
+        print("The norm is not less than 10^(-6)")
+    norm = calculate_norm_vectors(x_householder, s) / calculate_norm_one_vector(s)
+    print("|| x_householder - s||2 / ||s||2: ", norm)
+    if norm < epsilon:
+        print("The norm is less than 10^(-6)")
+    else:
+        print("The norm is not less than 10^(-6)")
+    norm = calculate_norm_vectors(x_qr, s) / calculate_norm_one_vector(s)
+    print("|| x_qr - s||2 / ||s||2: ", norm)
+    if norm < epsilon:
+        print("The norm is less than 10^(-6)")
+    else:
+        print("The norm is not less than 10^(-6)")
+
+
+def random_matrix(n):
+    matrix = []
+    for i in range(n):
+        row = []
+        for j in range(n):
+            row.append(random.uniform(0, 100))
+        matrix.append(row)
+    return matrix
+
+
+def random_vector(n):
+    s = [0.0] * n
+    for i in range(n):
+        s[i] = random.randint(1, 100)
+    return s
+
+
+
+
+
+def calculate_inverse(Q,A,b):
+    Qt=transpose_matrix(Q)
+    #check determinant
+    A_inverse = []
+    for i in range(n):
+        row = [0] * n
+        A_inverse.append(row)
+    for j in range(n):
+        b=Q[j]
+        A_inverse[j]=solve_upper_triangular_system(A,b)
+    return A_inverse
+
 
 if __name__ == '__main__':
     set_epsilon(10 ** -5)
-    A = [[0, 0, 4], [1, 2, 3], [0, 1, 2]]
+    A_init = [[0, 0, 4], [1, 2, 3], [0, 1, 2]]
     s = [3, 2, 1]
-    b = calculate_b(A, s)
+    n=5
+    #A_init= random_matrix(n)
+    #s = random_vector(n)
+    b_init = calculate_b(A_init, s)
 
-    Q_numpy, R_numpy = np.linalg.qr(A)
-    x_qa = solve_upper_triangular_system_q(R_numpy, transpose_matrix(Q_numpy), b)
+    Q_numpy, R_numpy = np.linalg.qr(A_init)
+    Qb = np.matmul(Q_numpy.T, b_init)
+    x_qr = np.linalg.solve(R_numpy, Qb)
     print("---Numpy---")
     print("---Q---")
     for line in Q_numpy:
@@ -208,13 +308,12 @@ if __name__ == '__main__':
     print("---R---")
     for line in R_numpy:
         print(line)
-    print("---x qa---")
-    print(x_qa)
+    print("---x qr---")
+    print(x_qr)
 
     print("---CALCULAT---")
-    Q, A, b = qr_householder(A, b)
+    Q, A, b = qr_householder(A_init, b_init)
     x_householder = solve_upper_triangular_system(A, b)
-    print("---Numpy---")
     print("---Q---")
     for line in Q:
         print(line)
@@ -223,14 +322,17 @@ if __name__ == '__main__':
         print(line)
     print("---x householder---")
     print(x_householder)
-    x = [0.0] * len(A)
-    for i in range(len(A)):
-        x[i] = x_householder[i] - x_qa[i]
-    norm = np.linalg.norm(x)
+
+    norm = calculate_norm_vectors(x_qr, x_householder)
     print("---norm---")
     print(norm)
 
-    A_init = [[0, 0, 4], [1, 2, 3], [0, 1, 2]]
-    b_init = calculate_b(A_init, s)
-    print(b_init)
-    #calculate_norms(A_init, x_householder, x_qa, b, s)
+    print("-----------4--------------")
+    calculate_norms(A_init, x_householder, x_qr, b_init, s)
+
+    print("-----------5--------------")
+    A_inverse = calculate_inverse(Q,A,b)
+    A_inverse_numpy=np.linalg.inv(A)
+    print("A_inverse: ", A_inverse)
+    print("A_inverse_numpy: ", A_inverse_numpy)
+
