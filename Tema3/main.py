@@ -256,6 +256,15 @@ def calculate_norms(A_init, x_householder, x_qr, b, s):
         print("The norm is not less than 10^(-6)")
 
 
+def calculate_norm_two_matrices(A, B):
+    sum = 0.0
+    for i in range(len(A)):
+        for j in range(len(A[0])):
+            sum += (A[i][j] - B[i][j]) ** 2
+    euclidean_norm = math.sqrt(sum)
+    return euclidean_norm
+
+
 def random_matrix(n):
     matrix = []
     for i in range(n):
@@ -273,19 +282,20 @@ def random_vector(n):
     return s
 
 
-
-
-
-def calculate_inverse(Q,A,b):
-    Qt=transpose_matrix(Q)
-    #check determinant
+def calculate_inverse(Q, A, A_init):
+    Qt = transpose_matrix(Q)
+    n = len(A)
+    # check determinant
     A_inverse = []
     for i in range(n):
         row = [0] * n
         A_inverse.append(row)
     for j in range(n):
-        b=Q[j]
-        A_inverse[j]=solve_upper_triangular_system(A,b)
+        for i in range(n):
+            b[i] = Q[i][j]
+        x_star = solve_upper_triangular_system(A, b)
+        for i in range(n):
+            A_inverse[i][j] = x_star[i]
     return A_inverse
 
 
@@ -293,9 +303,9 @@ if __name__ == '__main__':
     set_epsilon(10 ** -5)
     A_init = [[0, 0, 4], [1, 2, 3], [0, 1, 2]]
     s = [3, 2, 1]
-    n=5
-    #A_init= random_matrix(n)
-    #s = random_vector(n)
+    n = 5
+    # A_init= random_matrix(n)
+    # s = random_vector(n)
     b_init = calculate_b(A_init, s)
 
     Q_numpy, R_numpy = np.linalg.qr(A_init)
@@ -331,8 +341,9 @@ if __name__ == '__main__':
     calculate_norms(A_init, x_householder, x_qr, b_init, s)
 
     print("-----------5--------------")
-    A_inverse = calculate_inverse(Q,A,b)
-    A_inverse_numpy=np.linalg.inv(A)
+    A_inverse = calculate_inverse(Q, A, A_init)
+    A_inverse_numpy = np.linalg.inv(A_init)
+    norm_matrices = calculate_norm_two_matrices(A_inverse, A_inverse_numpy)
     print("A_inverse: ", A_inverse)
     print("A_inverse_numpy: ", A_inverse_numpy)
-
+    print("Matrices norm:", norm_matrices)
