@@ -1,6 +1,6 @@
 import math
+
 import numpy as np
-import random
 
 global epsilon
 
@@ -189,6 +189,10 @@ def solve_upper_triangular_system_q(R, Q_transpose, b):
     return x
 
 
+def calculate_norms(A_init, x_householder, x_qa, b, s):
+    AX = multiply_matrices(A_init, x_householder)
+ 
+
 if __name__ == '__main__':
     set_epsilon(10 ** -5)
     A = [[0, 0, 4], [1, 2, 3], [0, 1, 2]]
@@ -196,7 +200,7 @@ if __name__ == '__main__':
     b = calculate_b(A, s)
 
     Q_numpy, R_numpy = np.linalg.qr(A)
-    x_qa=solve_upper_triangular_system_q(R_numpy,transpose_matrix(Q_numpy),b)
+    x_qa = solve_upper_triangular_system_q(R_numpy, transpose_matrix(Q_numpy), b)
     print("---Numpy---")
     print("---Q---")
     for line in Q_numpy:
@@ -219,10 +223,14 @@ if __name__ == '__main__':
         print(line)
     print("---x householder---")
     print(x_householder)
-    x=[0.0]*len(A)
+    x = [0.0] * len(A)
     for i in range(len(A)):
-        x[i]=x_householder[i]-x_qa[i]
+        x[i] = x_householder[i] - x_qa[i]
     norm = np.linalg.norm(x)
     print("---norm---")
     print(norm)
 
+    A_init = [[0, 0, 4], [1, 2, 3], [0, 1, 2]]
+    b_init = calculate_b(A_init, s)
+    print(b_init)
+    #calculate_norms(A_init, x_householder, x_qa, b, s)
