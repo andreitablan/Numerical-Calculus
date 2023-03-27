@@ -1,6 +1,7 @@
 import math
 import random
 import numpy as np
+import scipy.linalg
 
 global epsilon
 
@@ -85,6 +86,19 @@ def multiply_matrices(matrix1, matrix2):
         for j in range(cols1):
             for k in range(rows2):
                 result[i][j] += matrix1[i][k] * matrix2[k][j]
+    return result
+
+
+def multiply_matrices_bonus(R, Q):
+    n = len(R)
+    result = [[0.0] * n for i in range(n)]  # Initialize result matrix to zero
+    for i in range(n):
+        for j in range(i, n):
+            dot_product = 0.0
+            for k in range(n):
+                dot_product += R[i][k] * Q[k][j]
+            result[i][j] = dot_product
+            result[j][i] = dot_product  # Reflect result across diagonal
     return result
 
 
@@ -282,21 +296,57 @@ def random_vector(n):
     return s
 
 
-def calculate_inverse(Q, A, A_init):
-    Qt = transpose_matrix(Q)
+def calculate_inverse(Q, A):
+    Qt = np.array(transpose_matrix(Q))
     n = len(A)
     # check determinant
-    A_inverse = []
-    for i in range(n):
-        row = [0] * n
-        A_inverse.append(row)
+    A_inverse = np.zeros((n, n))
     for j in range(n):
-        for i in range(n):
-            b[i] = Q[i][j]
+        b = Qt[:, j]
         x_star = solve_upper_triangular_system(A, b)
-        for i in range(n):
-            A_inverse[i][j] = x_star[i]
+        A_inverse[:, j] = x_star
     return A_inverse
+
+
+def calculate_limit(A, b,epsilon=1e-6):
+    k = 0
+    Ak = A.copy()
+    while True:
+        Q, R, b = qr_householder(Ak, b)
+        Akp1 = multiply_matrices_bonus(R, Q)
+
+        norm = calculate_norm_two_matrices(Akp1, Ak)
+        # norm = np.linalg.norm(Akp1 - Ak)
+        n1=np.array(Akp1)
+        n2=np.array(Ak)
+        if np.max(np.abs(n1 - n2)) <= epsilon:
+            return Akp1
+        Ak = Akp1
+        k += 1
+
+
+def approximate_limit(A, epsilon=1e-6, max_iterations=1000):
+    n = A.shape[0]
+    k = 0
+    Ak = A.copy()
+    while True:
+        # Compute the QR decomposition of Ak using the Householder algorithm
+        Q, R = np.linalg.qr(Ak)
+
+        # Compute the next matrix in the sequence
+        Akp1 = R @ Q
+
+        # Check if the limit condition is satisfied
+        if np.max(np.abs(Akp1 - Ak)) <= epsilon:
+            return Akp1
+
+        # Update Ak for the next iteration
+        Ak = Akp1
+        k += 1
+
+        # Check if the maximum number of iterations has been reached
+        if k >= max_iterations:
+            raise RuntimeError("Maximum number of iterations reached")
 
 
 if __name__ == '__main__':
@@ -341,9 +391,19 @@ if __name__ == '__main__':
     calculate_norms(A_init, x_householder, x_qr, b_init, s)
 
     print("-----------5--------------")
-    A_inverse = calculate_inverse(Q, A, A_init)
-    A_inverse_numpy = np.linalg.inv(A_init)
+    A_inverse = calculate_inverse(Q, A)
+    A_inverse_numpy = scipy.linalg.inv(A_init)
     norm_matrices = calculate_norm_two_matrices(A_inverse, A_inverse_numpy)
-    print("A_inverse: ", A_inverse)
+    print("A_inverse: ")
+    for line in A_inverse:
+        print(line)
+    print("A_inverse is right calculated: ", multiply_matrices(A_init, A_inverse))
     print("A_inverse_numpy: ", A_inverse_numpy)
     print("Matrices norm:", norm_matrices)
+
+    print("----------BONUS-------------")
+    m = 2
+    lower_triangle = np.random.rand(m, m)
+    symmetric_matrix = lower_triangle + lower_triangle.T
+    rand_vector = np.random.rand(m)
+    print("Limit : ", calculate_limit(symmetric_matrix, rand_vector))
