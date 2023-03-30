@@ -91,15 +91,7 @@ def multiply_matrices(matrix1, matrix2):
 
 def multiply_matrices_bonus(R, Q):
     n = len(R)
-    result = [[0.0] * n for i in range(n)]  # Initialize result matrix to zero
-    for i in range(n):
-        for j in range(n):
-            if i<=j:
-                dot_product = 0.0
-                for k in range(n):
-                    dot_product += R[i][k] * Q[k][j]
-                result[i][j] = dot_product
-                result[j][i] = dot_product  # Reflect result across diagonal
+    result = [[sum([Q[i][k] * R[k][j] for k in range(i, n)]) for j in range(n)] for i in range(n)]
     return result
 
 
@@ -309,31 +301,21 @@ def calculate_inverse(Q, A):
     return A_inverse
 
 
-def calculate_limit(A, b,epsilon=1e-6):
+def calculate_limit(A, b):
     epsilon = 1e-6
+    iterations=0
+    maximum_iterations=1000
     Ak = A.copy()
     while True:
         Q, R, b = qr_householder(Ak, b)
-        Akp1 = R @ Q
-
+        Akp1 = multiply_matrices_bonus(R, Q)
         norm = calculate_norm_two_matrices(Akp1, Ak)
-        # norm = np.linalg.norm(Akp1 - Ak)
-        n1=np.array(Akp1)
-        n2=np.array(Ak)
-        if np.max(np.abs(Akp1 - Ak)) <= epsilon:
+        if norm <= epsilon:
             return Akp1
         Ak = Akp1
-
-
-def approximate_limit(A, b, epsilon=1e-6, max_iterations=1000):
-    k = 0
-    Ak = A.copy()
-    while True:
-        Q, R, b = qr_householder(Ak, b)
-        Akp1 = R @ Q
-        if np.max(np.abs(Akp1 - Ak)) <= epsilon:
+        if iterations > maximum_iterations:
             return Akp1
-        Ak = Akp1
+        iterations+=1
 
 
 if __name__ == '__main__':
@@ -389,8 +371,9 @@ if __name__ == '__main__':
     print("Matrices norm:", norm_matrices)
 
     print("----------BONUS-------------")
-    m = 2
+    m = 5
     lower_triangle = np.random.rand(m, m)
     symmetric_matrix = lower_triangle + lower_triangle.T
+    print("A: ", symmetric_matrix)
     rand_vector = np.random.rand(m)
-    print("Limit : ", approximate_limit(symmetric_matrix,rand_vector))
+    print("Limit : ", calculate_limit(symmetric_matrix, rand_vector))
