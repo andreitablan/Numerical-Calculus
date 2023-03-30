@@ -93,12 +93,13 @@ def multiply_matrices_bonus(R, Q):
     n = len(R)
     result = [[0.0] * n for i in range(n)]  # Initialize result matrix to zero
     for i in range(n):
-        for j in range(i, n):
-            dot_product = 0.0
-            for k in range(n):
-                dot_product += R[i][k] * Q[k][j]
-            result[i][j] = dot_product
-            result[j][i] = dot_product  # Reflect result across diagonal
+        for j in range(n):
+            if i<=j:
+                dot_product = 0.0
+                for k in range(n):
+                    dot_product += R[i][k] * Q[k][j]
+                result[i][j] = dot_product
+                result[j][i] = dot_product  # Reflect result across diagonal
     return result
 
 
@@ -216,7 +217,7 @@ def calculate_norm_vectors(x, y):
     n = len(x)
     sum = 0
     for i in range(n):
-        sum += (x[i] - y[i]) ** 2
+        sum += abs(x[i] - y[i]) ** 2
     norm = math.sqrt(sum)
     return norm
 
@@ -238,7 +239,7 @@ def calculate_norm_system(A, x, b):
         for j in range(n):
             s_line += A[i][j] * x[j]
         z = s_line - b[i]
-        sum += z ** 2
+        sum += abs(z) ** 2
     norm = math.sqrt(sum)
     return norm
 
@@ -274,7 +275,7 @@ def calculate_norm_two_matrices(A, B):
     sum = 0.0
     for i in range(len(A)):
         for j in range(len(A[0])):
-            sum += (A[i][j] - B[i][j]) ** 2
+            sum += abs(A[i][j] - B[i][j]) ** 2
     euclidean_norm = math.sqrt(sum)
     return euclidean_norm
 
@@ -309,44 +310,30 @@ def calculate_inverse(Q, A):
 
 
 def calculate_limit(A, b,epsilon=1e-6):
-    k = 0
+    epsilon = 1e-6
     Ak = A.copy()
     while True:
         Q, R, b = qr_householder(Ak, b)
-        Akp1 = multiply_matrices_bonus(R, Q)
+        Akp1 = R @ Q
 
         norm = calculate_norm_two_matrices(Akp1, Ak)
         # norm = np.linalg.norm(Akp1 - Ak)
         n1=np.array(Akp1)
         n2=np.array(Ak)
-        if np.max(np.abs(n1 - n2)) <= epsilon:
+        if np.max(np.abs(Akp1 - Ak)) <= epsilon:
             return Akp1
         Ak = Akp1
-        k += 1
 
 
-def approximate_limit(A, epsilon=1e-6, max_iterations=1000):
-    n = A.shape[0]
+def approximate_limit(A, b, epsilon=1e-6, max_iterations=1000):
     k = 0
     Ak = A.copy()
     while True:
-        # Compute the QR decomposition of Ak using the Householder algorithm
-        Q, R = np.linalg.qr(Ak)
-
-        # Compute the next matrix in the sequence
+        Q, R, b = qr_householder(Ak, b)
         Akp1 = R @ Q
-
-        # Check if the limit condition is satisfied
         if np.max(np.abs(Akp1 - Ak)) <= epsilon:
             return Akp1
-
-        # Update Ak for the next iteration
         Ak = Akp1
-        k += 1
-
-        # Check if the maximum number of iterations has been reached
-        if k >= max_iterations:
-            raise RuntimeError("Maximum number of iterations reached")
 
 
 if __name__ == '__main__':
@@ -406,4 +393,4 @@ if __name__ == '__main__':
     lower_triangle = np.random.rand(m, m)
     symmetric_matrix = lower_triangle + lower_triangle.T
     rand_vector = np.random.rand(m)
-    print("Limit : ", calculate_limit(symmetric_matrix, rand_vector))
+    print("Limit : ", approximate_limit(symmetric_matrix,rand_vector))
