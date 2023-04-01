@@ -168,7 +168,6 @@ def solve_upper_triangular_system(R, b):
     n = len(R)
     x = [0] * n
 
-    # Back substitution
     for i in range(n - 1, -1, -1):
         s = 0
         for j in range(i + 1, n):
@@ -179,14 +178,11 @@ def solve_upper_triangular_system(R, b):
 
 
 def solve_upper_triangular_system_q(R, Q_transpose, b):
-    """
-    Solve the upper triangular system Rx = Q^T b using back substitution.
-    """
+
     n = len(R)
     m = len(Q_transpose[0])
     x = [0] * m
 
-    # Back substitution
     for i in range(n - 1, -1, -1):
         s = 0
         for j in range(i + 1, n):
@@ -302,7 +298,7 @@ def calculate_inverse(Q, A):
 
 
 def calculate_limit(A, b):
-    epsilon = 10**-9
+    epsilon = 10**-5
     iterations = 0
     maximum_iterations = 1000
     Ak = A.copy()
