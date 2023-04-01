@@ -302,9 +302,9 @@ def calculate_inverse(Q, A):
 
 
 def calculate_limit(A, b):
-    epsilon = 1e-6
-    iterations=0
-    maximum_iterations=1000
+    epsilon = 10**-9
+    iterations = 0
+    maximum_iterations = 1000
     Ak = A.copy()
     while True:
         Q, R, b = qr_householder(Ak, b)
@@ -315,7 +315,7 @@ def calculate_limit(A, b):
         Ak = Akp1
         if iterations > maximum_iterations:
             return Akp1
-        iterations+=1
+        iterations += 1
 
 
 if __name__ == '__main__':
@@ -371,7 +371,7 @@ if __name__ == '__main__':
     print("Matrices norm:", norm_matrices)
 
     print("----------BONUS-------------")
-    m = 5
+    m = 2
     lower_triangle = np.random.rand(m, m)
     symmetric_matrix = lower_triangle + lower_triangle.T
     print("A: ", symmetric_matrix)
