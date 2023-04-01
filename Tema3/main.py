@@ -97,7 +97,11 @@ def multiply_matrices(matrix1, matrix2):
 
 def multiply_matrices_bonus(R, Q):
     n = len(R)
-    result = [[sum([Q[i][k] * R[k][j] for k in range(i, n)]) for j in range(n)] for i in range(n)]
+    result = np.zeros((n,n))
+    for i in range(n):
+        for j in range(i, n):
+            for k in range(n):
+                result[i][j] += R[j][k] * Q[k][i]
     return result
 
 
@@ -310,33 +314,37 @@ def calculate_inverse(Q, A):
 def calculate_limit(A, s):
     epsilon = 10**-5
     iterations = 0
-    maximum_iterations = 1000
+    maximum_iterations = 100000
     b = calculate_b(A, s)
-    Ak = A.copy()
+    Ak = [row.copy() for row in A]
     while True:
         Q, R, b = qr_householder(Ak, b)
         Akp1 = multiply_matrices_bonus(R, Q)
         norm = calculate_norm_two_matrices(Akp1, Ak)
         if norm <= epsilon:
+            print("ok")
             return Akp1
-        Ak = Akp1
+        Ak = [row.copy() for row in Akp1]
         if iterations > maximum_iterations:
             return Akp1
         iterations += 1
 
 
 if __name__ == '__main__':
-    set_epsilon(10 ** -5)
+    set_epsilon(10 ** -3)
     A_init = [[0, 0, 4], [1, 2, 3], [0, 1, 2]]
     s = [3, 2, 1]
-    n = 5
-    # A_init= random_matrix(n)
-    # s = random_vector(n)
+    #n = 100
+    #A_init= random_matrix(n)
+    #s = random_vector(n)
+
+    A_init_2 = [row.copy() for row in A_init]
     b_init = calculate_b(A_init, s)
 
     Q_numpy, R_numpy = np.linalg.qr(A_init)
     Qb = np.matmul(Q_numpy.T, b_init)
     x_qr = np.linalg.solve(R_numpy, Qb)
+    '''
     print("---Numpy---")
     print("---Q---")
     for line in Q_numpy:
@@ -346,10 +354,11 @@ if __name__ == '__main__':
         print(line)
     print("---x qr---")
     print(x_qr)
-
+    '''
     print("---CALCULAT---")
     Q, A, b = qr_householder(A_init, b_init)
     x_householder = solve_upper_triangular_system(A, b)
+    '''
     print("---Q---")
     for line in Q:
         print(line)
@@ -358,7 +367,7 @@ if __name__ == '__main__':
         print(line)
     print("---x householder---")
     print(x_householder)
-
+    '''
     norm = calculate_norm_vectors(x_qr, x_householder)
     print("---norm---")
     print(norm)
@@ -368,13 +377,18 @@ if __name__ == '__main__':
 
     print("-----------5--------------")
     A_inverse = calculate_inverse(Q, A)
-    A_inverse_numpy = scipy.linalg.inv(A_init)
+    print("Identity", multiply_matrices(A_init,A_inverse))
+    A_inverse_numpy = scipy.linalg.inv(A_init_2)
+    print("Identity numpy", multiply_matrices(A_inverse_numpy,A_init_2))
+
     norm_matrices = calculate_norm_two_matrices(A_inverse, A_inverse_numpy)
+    '''
     print("A_inverse: ")
     for line in A_inverse:
         print(line)
     print("A_inverse is right calculated: ", multiply_matrices(A_init, A_inverse))
     print("A_inverse_numpy: ", A_inverse_numpy)
+    '''
     print("Matrices norm:", norm_matrices)
 
     print("----------BONUS-------------")
