@@ -42,6 +42,12 @@ def u_multiply_u_t(u):
     return result
 
 
+def verify_divide(number):
+    global epsilon
+    if abs(number) <= epsilon:
+        raise ValueError("CANNOT DIVIDE!")
+
+
 def subtract_matrix(matrix1, matrix2):
     matrix1_rows = len(matrix1)
     matrix2_rows = len(matrix2)
@@ -137,6 +143,7 @@ def qr_householder(A, b):
             sum = 0.0
             for i in range(r, n):
                 sum += u[i] * A[i][j]
+            verify_divide(Beta)
             gama = sum / Beta
             for i in range(r, n):
                 A[i][j] = A[i][j] - gama * u[i]
@@ -147,6 +154,7 @@ def qr_householder(A, b):
         sum = 0.0
         for i in range(r, n):
             sum += u[i] * b[i]
+        verify_divide(Beta)
         gama = sum / Beta
 
         for i in range(r, n):
@@ -157,6 +165,7 @@ def qr_householder(A, b):
             sum = 0.0
             for i in range(r, n):
                 sum += u[i] * Q[i][j]
+            verify_divide(Beta)
             gama = sum / Beta
             for i in range(r, n):
                 Q[i][j] = Q[i][j] - gama * u[i]
@@ -172,13 +181,13 @@ def solve_upper_triangular_system(R, b):
         s = 0
         for j in range(i + 1, n):
             s += R[i][j] * x[j]
+        verify_divide(R[i][i])
         x[i] = (b[i] - s) / R[i][i]
 
     return x
 
 
 def solve_upper_triangular_system_q(R, Q_transpose, b):
-
     n = len(R)
     m = len(Q_transpose[0])
     x = [0] * m
@@ -187,6 +196,7 @@ def solve_upper_triangular_system_q(R, Q_transpose, b):
         s = 0
         for j in range(i + 1, n):
             s += R[i][j] * x[j]
+        verify_divide(R[i][i])
         x[i] = sum(Q_transpose[i][k] * b[k] for k in range(m)) - s / R[i][i]
 
     return x
@@ -297,10 +307,11 @@ def calculate_inverse(Q, A):
     return A_inverse
 
 
-def calculate_limit(A, b):
+def calculate_limit(A, s):
     epsilon = 10**-5
     iterations = 0
     maximum_iterations = 1000
+    b = calculate_b(A, s)
     Ak = A.copy()
     while True:
         Q, R, b = qr_householder(Ak, b)
