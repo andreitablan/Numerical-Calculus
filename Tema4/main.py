@@ -23,6 +23,9 @@ def read_system(file1, file2):
                         a[i].append(my_tuple)
             else:
                 a[i].append(my_tuple)
+            new_list = sorted(a[i], key=lambda x: x[1])
+            a[i]=[]
+            a[i] = new_list.copy()
     lines2 = []
     with open(file2, "r") as file_in:
         for line in file_in:
