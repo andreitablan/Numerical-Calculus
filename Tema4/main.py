@@ -30,9 +30,11 @@ def multiply_matrix_vector(matrix, vector):
 def verify_matrices_equality(matrix1, matrix2):
     n = len(matrix1)
     for i in range(n):
-        for j in range(n):
-            if abs(matrix1[i][j] - matrix2[i][j]) >= 10 ** (-6):
-                return False
+        for list1 in matrix1[i]:
+            for list2 in matrix2[i]:
+                if list1[1] == list2[1]:
+                    if abs(list1[0] - list2[0]) >= 10 ** (-6):
+                        return False
     return True
 
 
@@ -179,8 +181,24 @@ def add_matrices_bonus(matrix1, matrix2):
     n = len(matrix1)
     new_matrix = [[] for i in range(n)]
     for i in range(n):
-        for list_ in matrix1[i]:
-            print("hi")
+        for list_1 in matrix1[i]:
+            flag = False
+            for list_2 in matrix2[i]:
+                if list_1[1] == list_2[1]:
+                    flag = True
+                    new_element = [list_1[0] + list_2[0], list_1[1]]
+                    new_matrix[i].append(new_element)
+            if flag is False:
+                new_matrix[i].append(list_1)
+    for i in range(n):
+        for list_1 in matrix2[i]:
+            flag = False
+            for list_2 in new_matrix[i]:
+                if list_1[1] == list_2[1]:
+                    flag = True
+            if flag is False:
+                new_matrix[i].append(list_1)
+    return new_matrix
 
 
 if __name__ == '__main__':
@@ -193,3 +211,14 @@ if __name__ == '__main__':
         print(norm)
     else:
         print("It cannot be solved")
+
+    '''------BONUS-------'''
+    n1, a1 = read_matrix_only("sis_liniar/a.txt")
+    n2, a2 = read_matrix_only("sis_liniar/b.txt")
+    n3, a3 = read_matrix_only("sis_liniar/aplusb.txt")
+
+    bonus_matrix = add_matrices_bonus(a1, a2)
+    if verify_matrices_equality(bonus_matrix, a3) is True:
+        print("The matrices are equal")
+    else:
+        print("The matrices are not equal")
