@@ -189,6 +189,7 @@ def solve_gauss_seidel(a, b, n):
             xc[i] = (b[i] - sum1 - sum2) / element_diagonal
         norm = calculate_norm_vectors(xc, xp)
         k += 1
+    print("k=", k)
     if norm < epsilon:
         return xc
     else:
@@ -219,9 +220,9 @@ def add_matrices_bonus(matrix1, matrix2):
     return new_matrix
 
 
-if __name__ == '__main__':
-    n, a, b = read_system("sis_liniar/a_5.txt", "sis_liniar/b_5.txt")
-    print("The matrix has all elements on the diagonals !=0", verify_null_on_diagonals(a, n))
+def solve(file1,file2):
+    n, a, b = read_system(file1,file2)
+    print("The matrix has all elements on the diagonals !=0 :" , verify_null_on_diagonals(a, n))
     if verify_null_on_diagonals(a, n):
         xc = solve_gauss_seidel(a, b, n)
         if xc == "DIVERGENTA":
@@ -229,9 +230,23 @@ if __name__ == '__main__':
         else:
             a_xc = multiply_matrix_vector(a, xc)
             norm = calculate_norm_vectors(a_xc, b)
-            print(norm)
+            #print("x=", a_xc)
+            print("norm:", norm)
     else:
         print("It cannot be solved")
+
+
+if __name__ == '__main__':
+    print('------a1 b1-------')
+    #solve("sis_liniar/a_1.txt", "sis_liniar/b_1.txt")
+    print('------a2 b2-------')
+    solve("sis_liniar/a_2.txt", "sis_liniar/b_2.txt")
+    print('------a3 b3-------')
+    solve("sis_liniar/a_3.txt", "sis_liniar/b_3.txt")
+    print('------a4 b4-------')
+    solve("sis_liniar/a_4.txt", "sis_liniar/b_4.txt")
+    print('------a5 b5-------')
+    solve("sis_liniar/a_5.txt", "sis_liniar/b_5.txt")
 
     '''------BONUS-------'''
     n1, a1 = read_matrix_only("sis_liniar/a.txt")
@@ -239,6 +254,7 @@ if __name__ == '__main__':
     n3, a3 = read_matrix_only("sis_liniar/aplusb.txt")
 
     bonus_matrix = add_matrices_bonus(a1, a2)
+    print("----BONUS-----")
     if verify_matrices_equality(bonus_matrix, a3) is True:
         print("The matrices are equal")
     else:
