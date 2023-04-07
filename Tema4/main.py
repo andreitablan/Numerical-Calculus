@@ -7,12 +7,29 @@ def verify_divide(number):
         raise ValueError("CANNOT DIVIDE!")
 
 
+def normalize_array(x, y):
+    maxim_x = max(x)
+    maxim_y = max(y)
+    if maxim_x == 0.0:
+        maxim_x = maxim_y
+    elif maxim_y == 0.0:
+        maxim_y = maxim_x
+    for element in x:
+        verify_divide(maxim_x)
+        element = element / maxim_x
+    for element in y:
+        verify_divide(maxim_y)
+        element = element / maxim_y
+    return x, y
+
+
 def calculate_norm_vectors(x, y):
     n = len(x)
-    sum = 0
+    sum1 = 0
+    x, y = normalize_array(x, y)
     for i in range(n):
-        sum += abs(x[i] - y[i]) ** 2
-    norm = math.sqrt(sum)
+        sum1 += abs(x[i] - y[i])
+    norm = math.sqrt(sum1)
     return norm
 
 
@@ -133,6 +150,7 @@ def solve_gauss_seidel(a, b, n):
     epsilon = 1e-6
     k_max = 10000
     k = 0
+    norm = 0
     xc = [0.0 for i in range(n)]
     xp = [0.0 for i in range(n)]
 
@@ -150,13 +168,13 @@ def solve_gauss_seidel(a, b, n):
                 sum2 += element_list[0] * xp[element_list[1]]
         verify_divide(element_diagonal)
 
-        xc[i] = (b[i] - sum1 - sum1) / element_diagonal
-    norm = calculate_norm_vectors(xc, xp)
+        xc[i] = (b[i] - sum1 - sum2) / element_diagonal
+    norm = calculate_norm_vectors(xc,xp)
     k += 1
 
     while epsilon <= norm <= 10 ** 8 and k <= k_max:
         xp = [elem for elem in xc]
-        for i in range(n):
+        for i in range(0, n):
             sum1 = 0.0
             sum2 = 0.0
             element_diagonal = 0.0
@@ -168,13 +186,13 @@ def solve_gauss_seidel(a, b, n):
                 else:
                     sum2 += element_tuple[0] * xp[element_tuple[1]]
             verify_divide(element_diagonal)
-            xc[i] = (b[i] - sum1 - sum1) / element_diagonal
+            xc[i] = (b[i] - sum1 - sum2) / element_diagonal
         norm = calculate_norm_vectors(xc, xp)
         k += 1
     if norm < epsilon:
         return xc
     else:
-        return xc
+        return xp
 
 
 def add_matrices_bonus(matrix1, matrix2):
@@ -206,9 +224,12 @@ if __name__ == '__main__':
     print("The matrix has all elements on the diagonals !=0", verify_null_on_diagonals(a, n))
     if verify_null_on_diagonals(a, n):
         xc = solve_gauss_seidel(a, b, n)
-        a_xc = multiply_matrix_vector(a, xc)
-        norm = calculate_norm_vectors(a_xc, b)
-        print(norm)
+        if xc == "DIVERGENTA":
+            print("DIVERGENTA")
+        else:
+            a_xc = multiply_matrix_vector(a, xc)
+            norm = calculate_norm_vectors(a_xc, b)
+            print(norm)
     else:
         print("It cannot be solved")
 
