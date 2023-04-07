@@ -238,7 +238,7 @@ def solve(file1,file2):
 
 if __name__ == '__main__':
     print('------a1 b1-------')
-    #solve("sis_liniar/a_1.txt", "sis_liniar/b_1.txt")
+    solve("sis_liniar/a_1.txt", "sis_liniar/b_1.txt")
     print('------a2 b2-------')
     solve("sis_liniar/a_2.txt", "sis_liniar/b_2.txt")
     print('------a3 b3-------')
