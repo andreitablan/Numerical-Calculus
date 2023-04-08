@@ -26,7 +26,7 @@ def normalize_array(x, y):
 def calculate_norm_vectors(x, y):
     n = len(x)
     sum1 = 0
-    x, y = normalize_array(x, y)
+    # x, y = normalize_array(x, y)
     for i in range(n):
         sum1 += abs(x[i] - y[i])
     norm = math.sqrt(sum1)
@@ -164,7 +164,7 @@ def solve_gauss_seidel(a, b, n):
                 sum1 += element_list[0] * xc[element_list[1]]
             elif element_list[1] == i:
                 element_diagonal = element_list[0]
-            else:
+            elif element_list[1] > i:
                 sum2 += element_list[0] * xp[element_list[1]]
         verify_divide(element_diagonal)
 
@@ -183,7 +183,7 @@ def solve_gauss_seidel(a, b, n):
                     sum1 += element_tuple[0] * xc[element_tuple[1]]
                 elif element_tuple[1] == i:
                     element_diagonal = element_tuple[0]
-                else:
+                elif element_tuple[1] > i:
                     sum2 += element_tuple[0] * xp[element_tuple[1]]
             verify_divide(element_diagonal)
             xc[i] = (b[i] - sum1 - sum2) / element_diagonal
@@ -193,7 +193,7 @@ def solve_gauss_seidel(a, b, n):
     if norm < epsilon:
         return xc
     else:
-        return xp
+        return "DIVERGENTA"
 
 
 def add_matrices_bonus(matrix1, matrix2):
@@ -225,28 +225,22 @@ def solve(file1,file2):
     print("The matrix has all elements on the diagonals !=0 :" , verify_null_on_diagonals(a, n))
     if verify_null_on_diagonals(a, n):
         xc = solve_gauss_seidel(a, b, n)
+
         if xc == "DIVERGENTA":
             print("DIVERGENTA")
         else:
+            print("x=", xc)
             a_xc = multiply_matrix_vector(a, xc)
             norm = calculate_norm_vectors(a_xc, b)
-            #print("x=", a_xc)
             print("norm:", norm)
     else:
         print("It cannot be solved")
 
 
 if __name__ == '__main__':
-    print('------a1 b1-------')
-    solve("sis_liniar/a_1.txt", "sis_liniar/b_1.txt")
-    print('------a2 b2-------')
-    solve("sis_liniar/a_2.txt", "sis_liniar/b_2.txt")
-    print('------a3 b3-------')
-    solve("sis_liniar/a_3.txt", "sis_liniar/b_3.txt")
-    print('------a4 b4-------')
-    solve("sis_liniar/a_4.txt", "sis_liniar/b_4.txt")
-    print('------a5 b5-------')
-    solve("sis_liniar/a_5.txt", "sis_liniar/b_5.txt")
+    print('------a6 b6-------')
+    solve("sis_liniar/a_6.txt", "sis_liniar/b_6.txt")
+
 
     '''------BONUS-------'''
     n1, a1 = read_matrix_only("sis_liniar/a.txt")
