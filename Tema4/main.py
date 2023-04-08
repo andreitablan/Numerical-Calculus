@@ -151,29 +151,30 @@ def solve_gauss_seidel(a, b, n):
     k_max = 10000
     k = 0
     norm = 0
-    xc = [0.0 for i in range(n)]
-    xp = [0.0 for i in range(n)]
-
+    # xc = [0.0 for i in range(n)]
+    # xp = [0.0 for i in range(n)]
+    xc = [1.0, 2.0, 3.0, 4.0, 5.0]
     xp = [elem for elem in xc]
-    for i in range(n):
+    for i in range(0, n):
         sum1 = 0.0
         sum2 = 0.0
         element_diagonal = 0.0
-        for element_list in a[i]:
-            if element_list[1] < i:
-                sum1 += element_list[0] * xc[element_list[1]]
-            elif element_list[1] == i:
-                element_diagonal = element_list[0]
-            elif element_list[1] > i:
-                sum2 += element_list[0] * xp[element_list[1]]
+        for element_tuple in a[i]:
+            if element_tuple[1] < i:
+                sum1 += element_tuple[0] * xc[element_tuple[1]]
+            elif element_tuple[1] == i:
+                element_diagonal = element_tuple[0]
+            elif element_tuple[1] > i:
+                sum2 += element_tuple[0] * xp[element_tuple[1]]
         verify_divide(element_diagonal)
-
         xc[i] = (b[i] - sum1 - sum2) / element_diagonal
-    norm = calculate_norm_vectors(xc,xp)
+    norm = calculate_norm_vectors(xc, xp)
     k += 1
+    print("k, xc", k, xc)
 
     while epsilon <= norm <= 10 ** 8 and k <= k_max:
         xp = [elem for elem in xc]
+        print(xp)
         for i in range(0, n):
             sum1 = 0.0
             sum2 = 0.0
@@ -189,6 +190,8 @@ def solve_gauss_seidel(a, b, n):
             xc[i] = (b[i] - sum1 - sum2) / element_diagonal
         norm = calculate_norm_vectors(xc, xp)
         k += 1
+        print("k, xc", k, xc)
+
     print("k=", k)
     if norm < epsilon:
         return xc
@@ -220,9 +223,10 @@ def add_matrices_bonus(matrix1, matrix2):
     return new_matrix
 
 
-def solve(file1,file2):
-    n, a, b = read_system(file1,file2)
-    print("The matrix has all elements on the diagonals !=0 :" , verify_null_on_diagonals(a, n))
+def solve(file1, file2):
+    n, a, b = read_system(file1, file2)
+    print(a)
+    print("The matrix has all elements on the diagonals !=0 :", verify_null_on_diagonals(a, n))
     if verify_null_on_diagonals(a, n):
         xc = solve_gauss_seidel(a, b, n)
 
@@ -240,7 +244,6 @@ def solve(file1,file2):
 if __name__ == '__main__':
     print('------a6 b6-------')
     solve("sis_liniar/a_6.txt", "sis_liniar/b_6.txt")
-
 
     '''------BONUS-------'''
     n1, a1 = read_matrix_only("sis_liniar/a.txt")
