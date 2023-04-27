@@ -18,17 +18,6 @@ def calculate_norm_vectors(x, y):
     return norm
 
 
-def multiply_matrix_vector(matrix, vector):
-    result = []
-    n = len(matrix)
-    for list_of_lists in matrix:
-        dot_product = 0
-        for list_ in list_of_lists:
-            dot_product += list_[0] * vector[list_[1]]
-        result.append(dot_product)
-    return result
-
-
 def read_matrix_only(file1):
     lines = []
     with open(file1, "r") as file_in:
@@ -92,22 +81,51 @@ def calculate_euclidian_norm(x):
     norm = math.sqrt(sum)
     return norm
 
-def generate_random_vector():
-    dim = 6
+
+def generate_random_vector(dim):
     v = np.random.randn(dim)
     v = v / np.linalg.norm(v)
     return v
 
-def multiply_matrix_vector(matrix, vector):
-    matrix_np = np.array([np.array(row)[:, 0] for row in matrix])
-    result = np.dot(matrix_np, vector)
-    return result
 
-def metoda_puterii(a_generated):
-    v = generate_random_vector()
+def multiply_matrix_vector(matrix, vector):
+    vector_output = []
+    for line_list in matrix:
+        sum = 0.0
+        for element in line_list:
+            sum += element[0] * vector[element[1]]
+        vector_output.append(sum)
+
+    return vector_output
+
+
+def metoda_puterii(a):
+    epsilon = 10 ** (-3)
+    kmax = 1000000
+    n = len(a_generated)
+    v = generate_random_vector(n)
+
+    w = multiply_matrix_vector(a, v)
+    w = np.array(w)
+    lam = w * v
+    k = 0
+
+    v = (1 / np.linalg.norm(w)) * w
+    w = multiply_matrix_vector(a, v)
+    w = np.array(w)
+    lam = w * v
+    k += 1
+    while np.linalg.norm(w - lam * v) > n * 10 ** (-9) and k <= kmax:
+        v = (1 / np.linalg.norm(w)) * w
+        w = multiply_matrix_vector(a, v)
+        w = np.array(w)
+        lam = w * v
+        k += 1
+
+    print(k)
+    print(lam)
     print(v)
-    print(calculate_euclidian_norm(v))
-    print(multiply_matrix_vector(a_generated, v))
+
 
 def verify_matrix(a, n):
     for i in range(n):
@@ -146,6 +164,6 @@ if __name__ == '__main__':
     print("The matrix 1024 has A=AT:", verify_matrix(a1024, n1024))
     # n2023, a2023 = read_matrix_only("sisteme/m_rar_sim_2023_2023.txt")
     # print("The matrix 2023 has A=AT:", verify_matrix(a2023, n2023))
-    a_generated = generate_random_matrix(6)
-    print(a_generated)
+    a_generated = generate_random_matrix(600)
+    #print(a_generated)
     metoda_puterii(a_generated)
