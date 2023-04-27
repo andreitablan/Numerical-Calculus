@@ -1,6 +1,6 @@
-import numpy as np
 import math
 import random
+import numpy as np
 
 
 def verify_divide(number):
@@ -82,6 +82,33 @@ def generate_random_matrix(n):
     return a
 
 
+# metoda puterii aproximare
+# valorile proprii de modul maxim la toate matricile
+def calculate_euclidian_norm(x):
+    n = len(x)
+    sum = 0
+    for i in range(n):
+        sum += abs(x[i]) ** 2
+    norm = math.sqrt(sum)
+    return norm
+
+def generate_random_vector():
+    dim = 6
+    v = np.random.randn(dim)
+    v = v / np.linalg.norm(v)
+    return v
+
+def multiply_matrix_vector(matrix, vector):
+    matrix_np = np.array([np.array(row)[:, 0] for row in matrix])
+    result = np.dot(matrix_np, vector)
+    return result
+
+def metoda_puterii(a_generated):
+    v = generate_random_vector()
+    print(v)
+    print(calculate_euclidian_norm(v))
+    print(multiply_matrix_vector(a_generated, v))
+
 def verify_matrix(a, n):
     for i in range(n):
         for element in a[i]:
@@ -91,8 +118,8 @@ def verify_matrix(a, n):
             for element_1 in a[j]:
                 if element_1[1] == i:
                     ok = True
-                    if abs(element_1[0] - number)>10**(-6):
-                        print(i,j, element_1[0], element[0])
+                    if abs(element_1[0] - number) > 10 ** (-6):
+                        print(i, j, element_1[0], element[0])
                         return False
             if ok is False:
                 print(i, j, element[0])
@@ -114,9 +141,11 @@ def verify_null_on_diagonals(a, n):
 
 if __name__ == '__main__':
     n512, a512 = read_matrix_only("sisteme/m_rar_sim_2023_512.txt")
-    print("The matrix 512 has A=AT:", verify_matrix(a512,n512))
+    print("The matrix 512 has A=AT:", verify_matrix(a512, n512))
     n1024, a1024 = read_matrix_only("sisteme/m_rar_sim_2023_1024.txt")
     print("The matrix 1024 has A=AT:", verify_matrix(a1024, n1024))
-    n2023, a2023 = read_matrix_only("sisteme/m_rar_sim_2023_2023.txt")
-    print("The matrix 2023 has A=AT:", verify_matrix(a2023, n2023))
-    a_generated=generate_random_matrix(6)
+    # n2023, a2023 = read_matrix_only("sisteme/m_rar_sim_2023_2023.txt")
+    # print("The matrix 2023 has A=AT:", verify_matrix(a2023, n2023))
+    a_generated = generate_random_matrix(6)
+    print(a_generated)
+    metoda_puterii(a_generated)
