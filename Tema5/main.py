@@ -157,6 +157,47 @@ def verify_null_on_diagonals(a, n):
     return True
 
 
+def svd(p,n):
+    A = np.random.rand(p, n)
+    b= np.random.rand(p)
+    U, s, VT = np.linalg.svd(A)
+
+    print("Valorile singulare ale matricei A: ")
+    print(s)
+
+    rank_A = np.linalg.matrix_rank(A)
+    print("Matrix A rank: ", rank_A)
+
+    cond_A = np.linalg.cond(A)
+    print("Numărul de condiționare al matricei A: ", cond_A)
+
+    # construirea matricei Σ
+    AI = np.zeros((A.shape[0], A.shape[1]))
+    AI[:A.shape[1], :A.shape[1]] = np.diag(s)
+
+    V = VT.T
+    AI = np.dot(V, np.dot(AI, U.T))
+
+    print("Matrix AI = VSUT: ")
+    print(AI)
+
+    xi = np.dot(AI, b)
+    print(xi)
+
+    norm2=np.linalg.norm(b-np.dot(A,xi))
+    print("Norm 1: ", norm2)
+
+    AT = A.T
+    ATA = np.dot(AT, A)
+    ATA_inv = np.linalg.inv(ATA)
+    AJ = np.dot(ATA_inv, AT)
+    print("Matrix AJ: ")
+    print(AJ)
+
+    norm1=np.linalg.norm(AI-AJ,ord=1)
+    print("Norm 1:", norm1)
+
+
 if __name__ == '__main__':
     n512, a512 = read_matrix_only("sisteme/m_rar_sim_2023_512.txt")
     print("The matrix 512 has A=AT:", verify_matrix(a512, n512))
@@ -164,6 +205,9 @@ if __name__ == '__main__':
     print("The matrix 1024 has A=AT:", verify_matrix(a1024, n1024))
     # n2023, a2023 = read_matrix_only("sisteme/m_rar_sim_2023_2023.txt")
     # print("The matrix 2023 has A=AT:", verify_matrix(a2023, n2023))
-    a_generated = generate_random_matrix(600)
-    #print(a_generated)
+    a_generated = generate_random_matrix(10)
+    print("Metoda Puterii")
     metoda_puterii(a_generated)
+    p=10
+    n=10
+    svd(p,n)
