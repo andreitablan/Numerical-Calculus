@@ -310,7 +310,7 @@ def svd(p,n):
 
 
 if __name__ == '__main__':
-    '''
+
     n512, a512 = read_matrix_only("sisteme/m_rar_sim_2023_512.txt")
     print("The matrix 512 has A=AT:", verify_matrix(a512, n512))
     n1024, a1024 = read_matrix_only("sisteme/m_rar_sim_2023_1024.txt")
@@ -320,7 +320,7 @@ if __name__ == '__main__':
     a_generated = generate_random_matrix(10)
     print("Metoda Puterii")
     metoda_puterii(a_generated)
-    '''
+    
     p=10
     n=10
     svd(p,n)
