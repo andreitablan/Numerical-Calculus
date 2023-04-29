@@ -87,19 +87,19 @@ def generate_random_vector(dim):
     return v
 
 
-def multiply_matrix_vector(matrix, vector):
+def multiply_matrix_vector(A, vector):
     vector_output = []
-    for line_list in matrix:
+    p = len(A)
+    n = len(A[0])
+    for i in range(0, p):
         sum = 0.0
-        for element in line_list:
-            sum += element[0] * vector[element[1]]
+        for j in range(0, n):
+            sum += A[i][j] * vector[j]
         vector_output.append(sum)
-
     return vector_output
 
 
 def multiply_matrix_vector_normal(A, x):
-
     m, n = len(A), len(x)
     if n != len(A[0]):
         raise ValueError("Matrix and vector have incompatible dimensions")
@@ -126,6 +126,21 @@ def multiply_two_matrices(a, b):
     return result
 
 
+def multiply_two_matrices_not_square(A, B):
+    if len(A[0]) != len(B):
+        print(len(A[0]), len(B))
+        raise ValueError("Number of columns in A must be equal to number of rows in B")
+    m, n = len(A), len(A[0])
+    n, p = len(B), len(B[0])
+
+    C = [[0] * p for _ in range(m)]
+    for i in range(m):
+        for j in range(p):
+            for k in range(n):
+                C[i][j] += A[i][k] * B[k][j]
+    return C
+
+
 def metoda_puterii(a):
     epsilon = 10 ** (-3)
     kmax = 1000000
@@ -134,19 +149,19 @@ def metoda_puterii(a):
 
     w = multiply_matrix_vector(a, v)
     w = np.array(w)
-    lam = w * v
+    lam = np.dot(w, v)
     k = 0
 
     v = (1 / np.linalg.norm(w)) * w
     w = multiply_matrix_vector(a, v)
     w = np.array(w)
-    lam = w * v
+    lam = np.dot(w, v)
     k += 1
     while np.linalg.norm(w - lam * v) > n * 10 ** (-9) and k <= kmax:
         v = (1 / np.linalg.norm(w)) * w
         w = multiply_matrix_vector(a, v)
         w = np.array(w)
-        lam = w * v
+        lam = np.dot(w, v)
         k += 1
 
     print(k)
@@ -189,27 +204,38 @@ def matrix_rank(s):
     return rank
 
 
-def inverse(matrix):
-    n = len(matrix)
+def inverse(A):
+    p = len(A)
+    n = len(A[0])
 
-    identity = [[0] * n for i in range(n)]
-    for i in range(n):
-        identity[i][i] = 1
+    I = [[0 for x in range(p)] for y in range(p)]
+    for i in range(p):
+        I[i][i] = 1
 
-    for i in range(n):
-        element = matrix[i][i]
-        for j in range(i, n):
-            matrix[i][j] /= element
+    augmented_matrix = [row_A + row_I for row_A, row_I in zip(A, I)]
+
+    def row_operation(matrix, i, j, factor):
+        for k in range(len(matrix[0])):
+            matrix[i][k] -= factor * matrix[j][k]
+
+    # Perform row operations to transform the left-hand side of the augmented matrix into the identity matrix
+    for i in range(p):
+        element = augmented_matrix[i][i]
+        for j in range(i + 1, p):
+            factor = augmented_matrix[j][i] / element
+            row_operation(augmented_matrix, j, i, factor)
+
+        for j in range(i):
+            factor = augmented_matrix[j][i] / element
+            row_operation(augmented_matrix, j, i, factor)
+
         for j in range(n):
-            identity[i][j] /= element
-        for k in range(n):
-            if k != i:
-                factor = matrix[k][i]
-                for j in range(i, n):
-                    matrix[k][j] -= factor * matrix[i][j]
-                for j in range(n):
-                    identity[k][j] -= factor * identity[i][j]
-    return identity
+            augmented_matrix[i][j] /= element
+
+    inverse_A = []
+    for i in range(p):
+        inverse_A.append(augmented_matrix[i][n:])
+    return inverse_A
 
 
 def vector_matrix_norm(x, A):
@@ -219,7 +245,7 @@ def vector_matrix_norm(x, A):
     norm = 0
     for i in range(m):
         for j in range(n):
-            norm += (A[i][j] - x[j])**2
+            norm += (A[i][j] - x[j]) ** 2
 
     return math.sqrt(norm)
 
@@ -233,12 +259,12 @@ def matrix_manhattan_norm(matrix):
 
 
 def matrix_euclidean_norm(A):
-    n = len(A)
+    p = len(A)
+    n = len(A[0])
     norm = 0
-    for i in range(n):
+    for i in range(p):
         for j in range(n):
             norm += A[i][j] ** 2
-
     return math.sqrt(norm)
 
 
@@ -256,7 +282,6 @@ def transpose(matrix):
 
 
 def subtract_matrices(matrix1, matrix2):
-
     if len(matrix1) != len(matrix2) or len(matrix1[0]) != len(matrix2[0]):
         return "Error: Matrices must have the same dimensions."
 
@@ -269,58 +294,106 @@ def subtract_matrices(matrix1, matrix2):
     return result
 
 
-def svd(p,n):
-    A = np.random.rand(p, n)
-    b= np.random.rand(p)
-    U, s, VT = np.linalg.svd(A)
+def multiply_vector_with_matrix(x, A):
+    m = len(A)
+    n = len(A[0])
+    p = len(x)
 
+    result = [0] * m
+
+    for i in range(m):
+        for j in range(n):
+            result[i] += A[i][j] * x[j]
+    return result
+
+
+def multiply_vectors(x, y):
+    n = len(x)
+    result = 0
+    for i in range(n):
+        result += x[i] * y[i]
+    return result
+
+
+def create_diagonal_matrix(s, p, n):
+    if len(s) > n:
+        raise ValueError("Length of s cannot be greater than n")
+    S = np.zeros((p, n))
+    for i in range(len(s)):
+        S[i, i] = s[i]
+    return S
+
+
+def create_second_diagonal_matrix(s, p, n):
+    if len(s) > n:
+        raise ValueError("Length of s cannot be greater than n")
+    S = np.zeros((n, p))
+    for i in range(len(s)):
+        S[i, i] = 1 / s[i]
+    return S
+
+
+def svd(p, n):
+    A = np.random.rand(p, n)
+    b = np.random.rand(p)
+    U, s, VT = np.linalg.svd(A)
+    S = create_second_diagonal_matrix(s, p, n)
+
+    # S=np.diag([1/s_i if s_i != 0 else 0 for s_i in s])
     print("Valorile singulare ale matricei A: ")
     print(s)
 
     rank_A = matrix_rank(s)
     print("Matrix A rank: ", rank_A)
 
-    AI = inverse(A)
-
-    cond_A = matrix_euclidean_norm(A)*matrix_euclidean_norm(AI)
-    print("Numarul de conditionare al matricei A: ", cond_A)
-
     V = transpose(VT)
-    UT=transpose(U)
-    AI1 = multiply_two_matrices(V, multiply_two_matrices(AI, UT))
+    UT = transpose(U)
 
+    print(multiply_two_matrices_not_square(S, UT))
+    AI = multiply_two_matrices_not_square(V, multiply_two_matrices_not_square(S, UT))
+
+    cond_A = matrix_euclidean_norm(A) * matrix_euclidean_norm(AI)
+    print("Numarul de conditionare al matricei A: ", cond_A)
     print("Matrix AI = VSUT: ")
-    print(AI1)
+    print(AI)
 
-    xi = multiply_matrix_vector_normal(AI1, b)
+    A_inv = np.linalg.pinv(A)
+    print("A_inv")
+    print(A_inv)
+
+    xi = multiply_matrix_vector(AI, b)
     print(xi)
 
-    norm2=calculate_norm_vectors(b,multiply_matrix_vector_normal(A,xi))
+    norm2 = calculate_norm_vectors(b, multiply_matrix_vector(A, xi))
     print("Norm 2: ", norm2)
 
     AT = transpose(A)
-    ATA = multiply_two_matrices(AT,A)
+    ATA = multiply_two_matrices_not_square(AT, A)
     ATA_inv = inverse(ATA)
-    AJ = multiply_two_matrices(ATA_inv, AT)
+    AJ = multiply_two_matrices_not_square(ATA_inv, AT)
     print("Matrix AJ: ")
     print(AJ)
-    A_prime=subtract_matrices(AI,AJ)
-    norm1=matrix_manhattan_norm(A_prime)
+    A_prime = subtract_matrices(AI, AJ)
+    norm1 = matrix_manhattan_norm(A_prime)
     print("Norm 1:", norm1)
 
 
 if __name__ == '__main__':
-
+    '''
     n512, a512 = read_matrix_only("sisteme/m_rar_sim_2023_512.txt")
     print("The matrix 512 has A=AT:", verify_matrix(a512, n512))
     n1024, a1024 = read_matrix_only("sisteme/m_rar_sim_2023_1024.txt")
     print("The matrix 1024 has A=AT:", verify_matrix(a1024, n1024))
     n2023, a2023 = read_matrix_only("sisteme/m_rar_sim_2023_2023.txt")
     print("The matrix 2023 has A=AT:", verify_matrix(a2023, n2023))
-    a_generated = generate_random_matrix(10)
+    a_generated = generate_random_matrix(3)
+    a_generated=[[[131.89, 1]], [[131.89, 0]], [[518.78, 2]]]
+    
+    a_generated = a1024
+    print("A generated", a_generated)
     print("Metoda Puterii")
     metoda_puterii(a_generated)
-
-    p=10
-    n=10
-    svd(p,n)
+    '''
+    p = 11
+    n = 10
+    svd(p, n)
