@@ -11,7 +11,6 @@ def verify_divide(number):
 def calculate_norm_vectors(x, y):
     n = len(x)
     sum1 = 0
-    # x, y = normalize_array(x, y)
     for i in range(n):
         sum1 += abs(x[i] - y[i])
     norm = math.sqrt(sum1)
@@ -171,7 +170,6 @@ def svd(p,n):
     cond_A = np.linalg.cond(A)
     print("Numărul de condiționare al matricei A: ", cond_A)
 
-    # construirea matricei Σ
     AI = np.zeros((A.shape[0], A.shape[1]))
     AI[:A.shape[1], :A.shape[1]] = np.diag(s)
 
@@ -203,8 +201,8 @@ if __name__ == '__main__':
     print("The matrix 512 has A=AT:", verify_matrix(a512, n512))
     n1024, a1024 = read_matrix_only("sisteme/m_rar_sim_2023_1024.txt")
     print("The matrix 1024 has A=AT:", verify_matrix(a1024, n1024))
-    # n2023, a2023 = read_matrix_only("sisteme/m_rar_sim_2023_2023.txt")
-    # print("The matrix 2023 has A=AT:", verify_matrix(a2023, n2023))
+    n2023, a2023 = read_matrix_only("sisteme/m_rar_sim_2023_2023.txt")
+    print("The matrix 2023 has A=AT:", verify_matrix(a2023, n2023))
     a_generated = generate_random_matrix(10)
     print("Metoda Puterii")
     metoda_puterii(a_generated)
