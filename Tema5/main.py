@@ -283,7 +283,7 @@ def svd(p,n):
     AI = inverse(A)
 
     cond_A = matrix_euclidean_norm(A)*matrix_euclidean_norm(AI)
-    print("Numărul de condiționare al matricei A: ", cond_A)
+    print("Numarul de conditionare al matricei A: ", cond_A)
 
     V = transpose(VT)
     UT=transpose(U)
