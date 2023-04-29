@@ -296,7 +296,7 @@ def svd(p,n):
     print(xi)
 
     norm2=calculate_norm_vectors(b,multiply_matrix_vector_normal(A,xi))
-    print("Norm 1: ", norm2)
+    print("Norm 2: ", norm2)
 
     AT = transpose(A)
     ATA = multiply_two_matrices(AT,A)
@@ -320,7 +320,7 @@ if __name__ == '__main__':
     a_generated = generate_random_matrix(10)
     print("Metoda Puterii")
     metoda_puterii(a_generated)
-    
+
     p=10
     n=10
     svd(p,n)
