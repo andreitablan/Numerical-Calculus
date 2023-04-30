@@ -369,7 +369,7 @@ def svd(p, n):
 
     AT = transpose(A)
     ATA = multiply_two_matrices_not_square(AT, A)
-    ATA_inv = inverse(ATA)
+    ATA_inv = np.linalg.inv(ATA)
     AJ = multiply_two_matrices_not_square(ATA_inv, AT)
     print("Matrix AJ: ")
     print(AJ)

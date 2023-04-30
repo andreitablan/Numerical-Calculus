@@ -75,18 +75,17 @@ def second_derivative(f, x, h=1e-5):
 
 
 def derivative_1_1(f, x, h=1e-5):
-    g1 = (3 * f(x) - 4 * f(x - h) + f(x - 2 * h)) / 2 * h
+    g1 = (3 * f(x) - 4 * f(x - h) + f(x - 2 * h)) / (2 * h)
     return g1
 
 
 def derivative_1_2(f, x, h=1e-5):
-    g2 = (-f(x + 2 * h) + 8 * f(x + h) - 8 * f(x - h) + f(x - 2 * h)) / 12 * h
+    g2 = (-f(x + 2 * h) + 8 * f(x + h) - 8 * f(x - h) + f(x - 2 * h)) / (12 * h)
     return g2
 
 
-
 def derivative_2(f, x, h=1e-05):
-    F = (-f(x + 2 * h) + 16 * f(x + h) - 30 * f(x) + 16 * f(x - h) - f(x - 2 * h)) / 12 * (h ** 2)
+    F = (-f(x + 2 * h) + 16 * f(x + h) - 30 * f(x) + 16 * f(x - h) - f(x - 2 * h)) / (12 * (h ** 2))
     return F
 
 
@@ -125,7 +124,7 @@ if __name__ == '__main__':
         print(x_min2, False)
 
     x0 = 1
-    x1 = 2.5
+    x1 = 2
     epsilon = 10 ** -4
     max_iterations = 1000
     x_min1, iterations1 = secant_method(f3, derivative_1_1, x0, x1, epsilon, max_iterations)
