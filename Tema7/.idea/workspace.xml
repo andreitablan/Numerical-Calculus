@@ -2,10 +2,13 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="154eece0-68c8-4145-aaf1-f8d89796459b" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/../Tema5/.idea/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../Tema5/main.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../Tema6/main.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Tema1/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/../Tema1/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Tema3/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/../Tema3/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Tema4/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/../Tema4/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Tema5/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../Tema5/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Tema5/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/../Tema5/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Tema6/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../Tema6/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Tema8/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/../Tema8/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -23,7 +26,11 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
-    "WebServerToolWindowFactoryState": "false"
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "git-widget-placeholder": "main",
+    "last_opened_file_path": "C:/GitHub/CN_andan/Tema7"
   }
 }]]></component>
   <component name="RunManager">
